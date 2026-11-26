@@ -1,84 +1,42 @@
-# ⚽ Goalless
+# ⚽ FOOTYLESS
 
-A football-knowledge daily puzzle hub — our take on the crisp "dark game hub" format
-(inspired by sites like lessgames.com; all code, art and sounds here are original).
+Daily football-knowledge puzzles — footyless.com. Dark, fast, quadrilingual
+(EN/FR/ES/AR + RTL), zero build step, zero backend.
 
-Built with **zero dependencies**: plain HTML + CSS + vanilla JS. No build step, no npm.
-Deploy by dragging the folder to Netlify / GitHub Pages / Vercel.
+**Games (V1):** Capless (caps duel) · Scoreless (mixed goals deck) · Kitless
+(pixel-deblur shirts) · **Missing XI** (name the legendary XI via mini-wordles).
+Later slate: Groundless · Statless · Legendless.
 
----
+## Run locally
 
-## Run it
-
-Option 1 — just open `index.html` in a browser.
-
-Option 2 — serve locally (nicer URLs, no quirks):
-
-```bash
-npx serve goalless
-# or
-python -m http.server 8000 --directory goalless
+```powershell
+powershell -ExecutionPolicy Bypass -File serve.ps1 8123
+# → http://127.0.0.1:8123
 ```
 
----
+(or any static server; `index.html` even works from file:// with graceful fallbacks)
 
-## What's inside
+## Systems
 
-```
-goalless/
-├─ index.html            Home: header, game card grid, daily countdown
-├─ stats.html            Local stats dashboard
-├─ css/base.css          Design system (tokens, components, animations, themes)
-├─ js/core.js            Engine: settings·storage·WebAudio SFX·modals·toasts·confetti·daily RNG
-├─ js/shell.js           Injects header/drawer/footer on every page + card art + game registry
-├─ js/home.js            Grid builder + countdown wiring
-├─ js/stats.js           Aggregates localStorage results
-├─ js/stub.js            Renders "in the making" panels for unwritten games
-└─ games/
-   ├─ capless/           ★ PLAYABLE demo duel (sample data)
-   ├─ scoreless/         stub
-   ├─ kitless/           stub
-   ├─ groundless/        stub
-   ├─ statless/          stub
-   └─ legendless/        stub
-```
+- **i18n** (`js/i18n.js`): 4 dictionaries, RTL flip, `data-i18n` binding, language in Preferences.
+- **Audio**: Howler.js + 13 synthesized WAVs (`tools/gen-audio.cjs`), event taxonomy, synth fallback.
+- **Daily engine**: UTC-seeded puzzles, countdown, played-today badges, localStorage stats + histogram.
+- **Supporter pass**: Stripe-payment-link ready, `?supporter=CODE` auto-redeem, local device token (V2: accounts).
+- **Freshness Pipeline**: `tools/bake-data.cjs` (Wikidata CC0 SPARQL + EntityData) → `data/players.json`,
+  quality-gated adoption via `js/packs.js`; weekly re-bake by `.github/workflows/freshness.yml`.
 
-### Systems already wired (shared by every future game)
+## Deploy (footyless.com)
 
-- **Design tokens** — dark/light themes, colour-blind palette remap, reduced-motion.
-- **Sound engine** — procedural WebAudio: taps, reveals, correct/wrong stings, drum,
-  win fanfare, ambient stand-rumble music toggle. Mute-safe, lazy-initialised.
-- **Daily infrastructure** — `GL.dailyRng(slug)` seeded by UTC date (everyone worldwide
-  gets the same puzzle), midnight countdown, `played today` badges, result recorder
-  (`GL.recordResult`), streak/win-rate aggregation.
-- **Shared chrome** — sticky header, slide-in drawer, preferences modal, toast stack,
-  accessible modals with focus handling, confetti bursts, haptics on mobile.
-- **Card grid** — responsive 1/2/3 columns, corner SVG art, hover physics,
-  TODAY ✓ badges.
+1. Create GitHub repo `footyless`, push this folder (`git remote add origin …; git push -u origin main`).
+2. Repo → Settings → Pages → Deploy from branch: `main` / root.
+3. Cloudflare: add site `footyless.com` (nameservers to Cloudflare), CNAME `@ → <user>.github.io`,
+   CNAME `www → <user>.github.io`, proxy ON, SSL Full.
+4. `CNAME` file is already in the repo, so Pages binds the custom domain automatically.
+5. Paste your Stripe Payment Links into `js/shell.js → STRIPE = { month, year }`.
 
-### Making the next game
-
-1. Duplicate `games/capless/` (smallest full loop: board → choice → reveal → results
-   modal → share text → stats saved).
-2. Register metadata in `Shell.GAMES` (title, tagline, art key) inside `js/shell.js`.
-3. Build the board UI — slots/inputs/grids you might reuse are already styled
-   (`.slot`, `.duel-*`, `.round-track`, `.choice-bar`).
-4. Fire the lifecycle: `GL.sfx.*` at moments, `GL.recordResult(slug,{won,score})` at the
-   end, `GL.openModal` for results, `GL.confetti()` on celebration.
-
-Rename the site: change the wordmark string + `<title>` in each HTML file
-(search for `GOALESS` / `Goalless`).
+## Roadmap
+M7 deploy → Stripe live keys → Groundless/Statless/Legendless → accounts & leaderboards (Supabase) →
+custom-puzzle creator (subscriber perk).
 
 ---
-
-## Roadmap brainstorm (games we could add next)
-
-- **Scoreless** — higher/lower: "did this striker bag more goals?"
-- **Kitless** — recognise the club from a stripe pattern alone.
-- **Groundless** — progressive clues (capacity → city → stand nickname).
-- **Statless** — "which of these two absurd records is real?"
-- **Legendless** — chain the career: club → next club → era.
-- Extras worth discussing: timed knockout mode, weekly "cup weekend" specials,
-  head-to-head links, share-image cards.
-
-Tell me which games to build first and we wire them into the shell above. 🥁
+*All code, art, and audio original. Facts via Wikidata (CC0). Not affiliated with any league.*
