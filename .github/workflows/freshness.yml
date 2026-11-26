@@ -1,0 +1,37 @@
+name: freshness-pipeline
+
+# FOOTYLESS Freshness Pipeline — weekly data rebake from Wikidata (CC0).
+# Runs Sundays 04:20 UTC, commits diffs so Pages redeploys fresh packs.
+
+on:
+  schedule:
+    - cron: "20 4 * * 0"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Bake player packs from Wikidata
+        run: node tools/bake-data.cjs --limit 170
+
+      - name: Commit if changed
+        run: |
+          git config user.name  "footyless-bot"
+          git config user.email "bot@footyless.com"
+          git add data/players.json
+          if git diff --cached --quiet; then
+            echo "No data changes — skipping commit."
+          else
+            git commit -m "data: weekly refresh $(date -u +%F)"
+            git push
+          fi

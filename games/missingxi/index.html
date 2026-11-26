@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Missing XI — Footyless</title>
+  <meta name="description" content="A legendary match, eleven anonymous shirts. Name every starter from memory." />
+  <meta name="theme-color" content="#161819" />
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@600,700&f[]=dm-sans@400,500,700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="../../css/base.css" />
+</head>
+<body data-page="game" data-wide="true">
+  <div class="app">
+    <main class="game-shell" id="shell-mount" style="max-width:860px">
+      <section class="game-hero" style="margin-bottom:12px">
+        <div class="game-hero__eyebrow" data-i18n="hero_teaser">Daily teaser</div>
+        <h1>Missing XI</h1>
+        <p class="mx-lede">A legendary match, eleven anonymous shirts. Name them all.</p>
+        <div style="margin-top:14px">
+          <button class="btn btn-ghost" id="btn-restart">↺ Restart match</button>
+        </div>
+      </section>
+      <div id="duel-app"><!-- pitch injected --></div>
+    </main>
+  </div>
+
+  <script src="../../js/vendor/howler.min.js"></script>
+  <script src="../../js/core.js" defer></script>
+  <script src="../../js/i18n.js" defer></script>
+  <script src="../../js/shell.js" defer></script>
+  <script src="data.js" defer></script>
+  <script src="game.js" defer></script>
+</body>
+</html>

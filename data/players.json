@@ -1,0 +1,161 @@
+{
+ "_meta": {
+  "source": "Wikidata (CC0): P1350 caps, P1351 goals; national-team anchored",
+  "bakedAt": "2026-11-26T20:02:38.817Z",
+  "count": 18,
+  "dropped": 0
+ },
+ "players": [
+  {
+   "id": "Q26380",
+   "n": "Iago Aspas",
+   "c": "Spain",
+   "v": 700,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q3978448",
+   "n": "Svein Bakke",
+   "c": "Norway",
+   "v": 556,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q11813832",
+   "n": "Paulo César Camassutti",
+   "c": "Brazil",
+   "v": 406,
+   "g": 85,
+   "born": null
+  },
+  {
+   "id": "Q3320968",
+   "n": "Jorge D'Alessandro",
+   "c": "Argentina",
+   "v": 390,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q98668875",
+   "n": "Thiago Prieto Acosta",
+   "c": "Argentina",
+   "v": 389,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q270367",
+   "n": "Luis Suárez",
+   "c": "Spain",
+   "v": 319,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q119520446",
+   "n": "José Manuel Delgado Tosco",
+   "c": "Spain",
+   "v": 272,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q2732465",
+   "n": "Jean-Louis Gasset",
+   "c": "France",
+   "v": 262,
+   "g": 14,
+   "born": null
+  },
+  {
+   "id": "Q141391177",
+   "n": "Q141391177",
+   "c": "Croatia",
+   "v": 132,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q3109755",
+   "n": "Godfrey Walusimbi",
+   "c": "Uganda",
+   "v": 105,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q131520506",
+   "n": "Miguel Colacray",
+   "c": "Argentina",
+   "v": 96,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q106626576",
+   "n": "Sikiru Alimi",
+   "c": "Nigeria",
+   "v": 83,
+   "g": 23,
+   "born": null
+  },
+  {
+   "id": "Q108655270",
+   "n": "Maxime Sivis",
+   "c": "France",
+   "v": 81,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q97748583",
+   "n": "Q97748583",
+   "c": "United States",
+   "v": 58,
+   "g": 11,
+   "born": null
+  },
+  {
+   "id": "Q123238032",
+   "n": "Armando Sanmillán",
+   "c": "Spain",
+   "v": 57,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q81464432",
+   "n": "Nicolás Solabarrieta Vergara",
+   "c": "Chile",
+   "v": 54,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q137041891",
+   "n": "Nhlanhla Zwane",
+   "c": "South Africa",
+   "v": 50,
+   "g": null,
+   "born": null
+  },
+  {
+   "id": "Q310571",
+   "n": "Valeri Karpin",
+   "c": "Soviet Union",
+   "v": 49,
+   "g": null,
+   "born": null
+  }
+ ],
+ "scorers": [
+  {
+   "n": "Paulo César Camassutti",
+   "c": "Brazil",
+   "g": 85
+  }
+ ]
+}
