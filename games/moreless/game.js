@@ -209,7 +209,7 @@
       const pickedCard = app.querySelector(`#dp-${logical === "l" ? "l" : "r"}`);
       pickedCard.classList.add(correct ? "flash-good" : "flash-bad");
       app.querySelector(".dp-board").classList.add(correct ? "vgood" : "vbad");
-      correct ? (GL.sfx.correct(), GL.confetti(30)) : (GL.sfx.wrong(), GL.sfx.whistle());
+      correct ? (GL.sfx.correct(), GL.confetti(30)) : GL.sfx.wrong();
       GL.haptic(correct ? 14 : [12, 45, 12]);
 
       /* verdict banner replaces category line temporarily */
@@ -222,6 +222,7 @@
 
       rounds.push({ cat: cat.id, won: correct });
       paintTrack();
+      /* singlecue policy: wrong() already played; whistle reserved for run-death splash only */
       advance(wonSide);
     });
   }
