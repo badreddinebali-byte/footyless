@@ -163,7 +163,7 @@
       (l.v > r.v ? lc : rc).classList.add("win-glow");
       btn.classList.add(correct ? "picked-correct" : "picked-wrong");
       setTimeout(() => {
-        correct ? (GL.sfx.correct(), GL.confetti(36)) : (GL.sfx.wrong(), GL.sfx.whistle());
+        correct ? (GL.sfx.correct(), GL.confetti(36)) : GL.sfx.wrong();
         GL.haptic(correct ? 12 : [10, 40, 10]);
       }, 260);
     }, 550);
@@ -185,7 +185,7 @@
       else if (b === btn) b.classList.add("picked-wrong");
       b.disabled = true;
     });
-    setTimeout(() => correct ? (GL.sfx.correct(), GL.confetti(36)) : (GL.sfx.wrong(), GL.sfx.whistle()), 200);
+    setTimeout(() => correct ? (GL.sfx.correct(), GL.confetti(36)) : GL.sfx.wrong(), 200);
     track.push(correct);
     repaintTrack();
     setTimeout(() => next(correct), 2200);
