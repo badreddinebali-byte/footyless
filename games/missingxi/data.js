@@ -212,7 +212,7 @@
 
   /* accepted alternate answers per folded surname */
   M.ALIASES = {
-    PELE: ["PELE"], DEBRUYNE: ["DEBRUYNE"], DI MARIA: [],
+    PELE: ["PELE"], DEBRUYNE: ["DEBRUYNE"], 
     "JULIANALVAREZ": ["LVAREZ"],
     PIRESPERES: [],
   };
