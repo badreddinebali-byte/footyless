@@ -117,7 +117,7 @@
       if (howls || !window.Howl) return;
       howls = {};
       Object.entries(LIB).forEach(([name, path]) => {
-        try { howls[name] = new Howl({ src: [`${ROOT}assets/audio/${path}.wav`], preload: true, volume: name === "drum" ? 0.8 : 0.7 }); } catch (_) {}
+        try { howls[name] = new Howl({ src: [`${ROOT}assets/audio/${path}.wav`], preload: true, volume: name === "wrong" ? 0.5 : name === "drum" ? 0.8 : 0.7 }); } catch (_) {}
       });
     }
     function wav(name) {

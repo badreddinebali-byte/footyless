@@ -114,8 +114,7 @@
         <div class="dp-orcoin"><span>OR</span><span class="dp-progress" data-progress></span></div>
         ${cardHTML(pair[1], "r")}
       </div>
-      <div class="round-track" id="round-track"></div>
-      <button class="dp-howto" id="btn-howto">${T("howto")}</button>`;
+      <div class="round-track" id="round-track"></div>`;
   }
 
   function paintTrack() {
@@ -155,10 +154,9 @@
     paintTrack();
     paintProgress();
     app.querySelectorAll(".dp-card").forEach(c => c.addEventListener("click", onPick));
-    app.querySelector("#btn-howto").addEventListener("click", openHowTo);
   }
 
-  /* ---------------- how-to modal (lessgames clone) ---------------- */
+  /* how-to modal kept callable via drawer/How-to sublink — no on-page button */
   function openHowTo() {
     GL.sfx.howto ? GL.sfx.howto() : GL.sfx.tap();
     const body = document.createElement("div");
@@ -345,7 +343,18 @@
 
   /* ---------- boot: load data first, then start (race fix) ---------- */
   Shell.mount(".app", "moreless");
+
+  /* How-to modal reachable via #howto hash (drawer deep-link) */
+  function maybeOpenHowTo() {
+    if (location.hash === "#howto") {
+      openHowTo();
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  }
+  window.addEventListener("hashchange", maybeOpenHowTo);
+
   loadData().finally(() => {
+    maybeOpenHowTo();
     restart();
   });
 })();

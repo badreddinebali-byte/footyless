@@ -1,5 +1,5 @@
 /* ============================================================
-   GOALESS â€” design system
+   GOALESS Ã¢â‚¬â€ design system
    Inspired by the crisp dark game-hub aesthetic. Original code.
    ============================================================ */
 
@@ -285,7 +285,7 @@ ul, ol { list-style: none; }
   .game-card:hover .game-card__art { transform: translate(-3px, -3px) scale(1.04); }
 }
 
-/* countdown strip â€” quieter */
+/* countdown strip Ã¢â‚¬â€ quieter */
 .daily-strip {
   margin-top: 26px;
   display: inline-flex;
@@ -906,7 +906,7 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
   width: 100%;
   max-width: 1500px;
   margin-inline: auto;
-  padding: 8px 16px 30px;
+  padding: 8px 16px 22px;
   display: flex;
   flex-direction: column;
 }
@@ -922,7 +922,7 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 }
 .ml-shell .dp-caticon { font-size: 21px; }
 
-/* cards: square, ~46vw cap, 16px gap â€” the 468px ratio */
+/* cards: square, ~46vw cap, 16px gap Ã¢â‚¬â€ the 468px ratio */
 .ml-shell .dp-board {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -950,25 +950,11 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 }
 
 /* progress dots BELOW cards, quiet */
-.ml-shell .round-track { margin: 16px 0 6px; }
+.ml-shell .round-track { margin: 16px 0 0; }
 .ml-shell #round-track { display: flex; flex-wrap: wrap; justify-content: center; }
 
-/* how-to ghost button */
 .ml-shell { align-items: center; }
 .ml-shell #duel-app { width: 100%; }
-.dp-howto {
-  margin: 12px auto 0;
-  display: inline-flex;
-  align-self: center;
-  padding: 9px 18px;
-  border-radius: var(--radius-pill);
-  color: var(--fg-muted);
-  font-size: 13.5px;
-  font-weight: 500;
-  border: 1px solid var(--hairline);
-  transition: color var(--dur-fast), border-color var(--dur-fast);
-}
-.dp-howto:hover { color: var(--fg); border-color: var(--fg-muted); }
 
 /* how-to modal demo */
 .ht-row { text-align: center; }
