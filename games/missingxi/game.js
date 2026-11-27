@@ -146,16 +146,18 @@
     };
   }
 
-  function gridHTML(s, target) {
+  function gridHTML(s, target, changedOnly) {
     const graded = s.rows.filter(r => r.marks);
     const draft = s.rows.find(r => !r.marks) || null;
     let html = "";
     for (let r = 0; r < TRIES; r++) {
       for (let c = 0; c < target.length; c++) {
         let ch = "", st = "";
+        let isNew = r === graded.length && c === (draft ? draft.word.length - 1 : -1);
         if (r < graded.length) { ch = graded[r].word[c] || ""; st = graded[r].marks[c] || ""; }
         else if (r === graded.length && draft) { ch = draft.word[c] || ""; }
-        html += `<span class="mx2-tile ${st}${r === graded.length ? " is-cur" : ""}" style="animation-delay:${c * 50}ms">${ch}</span>`;
+        const anim = changedOnly && !isNew ? " style=\"animation:none\"" : (st ? "" : ` style="animation-delay:${c * 50}ms"`);
+        html += `<span class="mx2-tile ${st}${r === graded.length ? " is-cur" : ""}"${changedOnly ? " data-live" : ""}${anim}>${ch}</span>`;
       }
     }
     return html;
@@ -164,7 +166,7 @@
   function rerender(idx) {
     const target = M.surnameOf(fx.lineup[idx].name);
     const g = app.querySelector("[data-grid]");
-    if (g) g.innerHTML = gridHTML(S[idx], target);
+    if (g) g.innerHTML = gridHTML(S[idx], target, true); /* typed edits: no re-poof */
   }
 
   function drawKeys(target) {
