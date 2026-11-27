@@ -1098,6 +1098,14 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 .mx2-mask { letter-spacing: 2px; color: #55595c; }
 [data-theme="light"] .mx2-mask { color: #939b9f; }
 
+
+/* surrender reveal: answers pop in staggered like a show-answers button */
+.mx2-name.reveal {
+  color: var(--answer-wrong);
+  animation: gl-poof .35s var(--ease-spring) backwards;
+  animation-delay: var(--rd, 0ms);
+}
+
 /* board footer: counter + give up */
 .mx2-boardfoot {
   position: absolute;

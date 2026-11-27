@@ -67,6 +67,7 @@
 
   function renderPitch() {
     view = "pitch";
+    const revealing = S && S.some(x => x.revealed);
     const solved = solvedCount(), failed = failedCount();
     app.innerHTML = `
       <div class="mx2-wrap">
@@ -88,6 +89,10 @@
         <button class="mx2-backrow" id="mx-restart">↻ ${T("mx_newmatch")}</button>
       </div>`;
     paintShirts();
+    if (revealing) {
+      let d = 0;
+      S.forEach((s, i) => { if (s.revealed) { const el = app.querySelector(`[data-shirt="${i}"] .mx2-name`); if (el) { el.style.setProperty('--rd', (d * 90) + 'ms'); d++; } } });
+    }
     app.querySelectorAll("[data-shirt]").forEach(el =>
       el.addEventListener("click", () => openWordle(+el.dataset.shirt)));
     app.querySelector("#mx-giveup").addEventListener("click", confirmGiveUp);
@@ -96,9 +101,12 @@
 
   function shirtHTML(p, i) {
     const s = S[i];
-    const num = (!hard || s.solved) ? `<span class="mx2-num">${p.num ?? i + 1}</span>` : "";
+    const num = (!hard || s.solved || s.revealed) ? `<span class="mx2-num">${p.num ?? i + 1}</span>` : "";
     const cls = s.solved ? " is-solved" : s.failed ? " is-failed" : s.dirty ? " is-touched" : "";
-    const label = s.solved || s.failed ? M.surnameOf(p.name) : `<span class="mx2-mask">${maskOf(p)}</span>`;
+    const reveal = s.failed && s.revealed;
+    const label = s.solved || s.failed
+      ? `<span class="mx2-name${reveal ? " reveal" : ""}">${M.surnameOf(p.name)}</span>`
+      : `<span class="mx2-mask">${maskOf(p)}</span>`;
     return `
       <button class="mx2-shirt${cls}" data-shirt="${i}" style="--x:${p.x}%;--y:${p.y}%" aria-label="${p.pos}">
         <span class="mx2-jersey">${num}<i>${p.num ?? i + 1}</i></span>
@@ -266,9 +274,19 @@
       bodyHTML: `<p>${T("mx_giveup_body")}</p>`,
       actions: [
         { label: T("cancel") },
-        { label: T("ft_title"), variant: "btn-primary", onClick: c => { c(); endNormal(true); } },
+        { label: T("ft_title"), variant: "btn-primary", onClick: c => { c(); surrender(); } },
       ],
     });
+  }
+
+  /* surrender: reveal every remaining surname on the pitch (show-answers), then results */
+  function surrender() {
+    GL.sfx.lost();
+    S.forEach((s, i) => {
+      if (!s.solved && !s.failed) { s.failed = true; s.revealed = true; }
+    });
+    renderPitch();
+    setTimeout(() => endNormal(true), 1400); /* let the reveal breathe */
   }
 
   function computedResult(forfeit) {
