@@ -924,3 +924,143 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 .wx-key:active { transform: scale(0.93); }
 .wx-key.wide { min-width: 52px; }
 .wx-note { margin-top: 10px; text-align: center; font-size: 11.5px; color: var(--fg-subtle); }
+
+/* ---------- Capless photo duel (More/less grammar) ---------- */
+.dp-question {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 2.6vw, 20px);
+  margin: 4px 0 14px;
+}
+.dp-board {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  perspective: 1200px;
+}
+.dp-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  aspect-ratio: 0.86;
+  background: var(--tile);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--dur-fast) var(--ease-out), box-shadow var(--dur-med);
+  will-change: transform;
+}
+.dp-card:hover { transform: scale(1.012); }
+.dp-photo {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  object-position: top center;
+}
+.dp-photo.is-broken { visibility: hidden; }
+.dp-ph-fallback {
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, var(--tile), var(--bg-recessed));
+}
+.dp-ph-fallback span {
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(42px, 9vw, 72px); color: var(--fg-subtle);
+}
+/* glossy readability scrim under the name plate */
+.dp-card::after {
+  content: "";
+  position: absolute; inset-inline: 0; bottom: 0; height: 42%;
+  background: linear-gradient(to top, rgba(0,0,0,.62), transparent);
+  pointer-events: none;
+}
+.dp-plate {
+  position: absolute;
+  z-index: 3;
+  bottom: 34px;
+  inset-inline: 10px;
+  background: #ECECEC;
+  color: #161819;
+  border-radius: 8px;
+  padding: 9px 12px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 3vw, 22px);
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(0,0,0,.35);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.dp-meta {
+  position: absolute; z-index: 3;
+  bottom: 12px; inset-inline: 12px;
+  text-align: center;
+  font-size: 11.5px; letter-spacing: .06em;
+  color: rgba(236,236,236,.85);
+  text-shadow: 0 1px 3px rgba(0,0,0,.8);
+}
+.dp-val {
+  position: absolute; z-index: 4;
+  top: 10px; inset-inline-end: 10px;
+  min-width: 46px; height: 40px;
+  padding: 0 10px;
+  border-radius: 10px;
+  background: rgba(22,24,25,.82);
+  color: var(--fg);
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 22px;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0;
+  transform: translateY(-6px) scale(.9);
+  transition: opacity var(--dur-med) var(--ease-out), transform var(--dur-med) var(--ease-spring);
+}
+.dp-card.is-revealed .dp-val { opacity: 1; transform: none; }
+.dp-card.is-winner { box-shadow: 0 0 0 3px var(--answer-correct), var(--shadow-md); }
+.dp-card.is-loser { filter: saturate(.75) brightness(.9); }
+
+/* central OR coin */
+.dp-orcoin {
+  position: absolute;
+  z-index: 5;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: #ECECEC;
+  color: #161819;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 700; font-size: 19px;
+  box-shadow: 0 4px 16px rgba(0,0,0,.45), 0 0 0 5px rgba(22,24,25,.28);
+  pointer-events: none;
+}
+[data-theme="light"] .dp-orcoin { background: #161819; color: #ECECEC; box-shadow: 0 4px 16px rgba(0,0,0,.25), 0 0 0 5px rgba(236,236,236,.3); }
+
+/* the two big pick zones */
+.dp-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 16px;
+}
+.dp-pick {
+  height: 58px;
+  border-radius: 14px;
+  background: var(--tile);
+  box-shadow: var(--shadow-sm);
+  color: var(--fg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  transition: transform var(--dur-fast) var(--ease-out), background var(--dur-fast), color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.dp-pick svg { width: 26px; height: 26px; }
+.dp-pick:hover { background: var(--tile-hover); transform: translateY(-1px); }
+.dp-pick:active { transform: scale(.96); }
+.dp-pick.is-correct { background: var(--answer-correct); color: #0b1a04; }
+.dp-pick.is-wrong { background: var(--answer-wrong); color: #fff; }
+.dp-pick.is-picked { box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg) 30%, transparent), var(--shadow-md); }
+
+@media (max-width: 520px) {
+  .dp-board { gap: 10px; }
+  .dp-orcoin { width: 46px; height: 46px; font-size: 16px; }
+  .dp-plate { font-size: 15px; bottom: 30px; }
+  .dp-pick { height: 52px; }
+}

@@ -1,112 +1,116 @@
 /* ============================================================
-   FOOTYLESS · CAPLESS — duel loop (who has more international caps?)
-   Data: data/players.json pack when available, embedded fallback otherwise.
+   FOOTYLESS · CAPLESS — photo duel (lessgames More/less grammar)
+   Two big portrait cards side by side · central OR coin ·
+   white name plates · value reveals after pick.
+   Photos: Wikidata P18 (CC) via photos-data.json; fallback initials.
    ============================================================ */
 (function () {
   "use strict";
   const GL = window.GL, Shell = window.Shell, T = window.I18N.t;
   const PACKS = window.Packs;
 
-  /* -------- FALLBACK SAMPLE (approximate, late 2025) -------- */
+  /* -------- FALLBACK (used until photo pack loads) -------- */
   const FALLBACK = [
     { n: "Cristiano Ronaldo", c: "Portugal", v: 217 },
     { n: "Lionel Messi", c: "Argentina", v: 191 },
-    { n: "Ahmed Hassan", c: "Egypt", v: 184 },
     { n: "Luka Modrić", c: "Croatia", v: 187 },
     { n: "Sergio Ramos", c: "Spain", v: 180 },
     { n: "Gianluigi Buffon", c: "Italy", v: 176 },
     { n: "Iker Casillas", c: "Spain", v: 167 },
     { n: "Robert Lewandowski", c: "Poland", v: 158 },
     { n: "Sunil Chhetri", c: "India", v: 151 },
-    { n: "Sergei Ignashevich", c: "Russia", v: 127 },
     { n: "Claudio Bravo", c: "Chile", v: 145 },
-    { n: "Andrés Iniesta", c: "Spain", v: 131 },
-    { n: "Neymar Jr", c: "Brazil", v: 128 },
-    { n: "Eden Hazard", c: "Belgium", v: 126 },
+    { n: "Luis Suárez", c: "Uruguay", v: 142 },
     { n: "Son Heung-min", c: "South Korea", v: 133 },
+    { n: "Andrés Iniesta", c: "Spain", v: 131 },
+    { n: "Neymar", c: "Brazil", v: 128 },
+    { n: "Eden Hazard", c: "Belgium", v: 126 },
     { n: "Zlatan Ibrahimović", c: "Sweden", v: 122 },
-    { n: "Bastian Schweinsteiger", c: "Germany", v: 121 },
     { n: "Wayne Rooney", c: "England", v: 120 },
     { n: "Andrea Pirlo", c: "Italy", v: 116 },
     { n: "David Beckham", c: "England", v: 115 },
-    { n: "Steven Gerrard", c: "England", v: 114 },
     { n: "Xabi Alonso", c: "Spain", v: 114 },
-    { n: "Kylian Mbappé", c: "France", v: 90 },
+    { n: "Mohamed Salah", c: "Egypt", v: 115 },
+    { n: "Harry Kane", c: "England", v: 109 },
     { n: "Ronaldinho", c: "Brazil", v: 97 },
-    { n: "Erling Haaland", c: "Norway", v: 43 },
-    { n: "Kwadwo Asamoah", c: "Ghana", v: 78 },
-    { n: "Paul Scholes", c: "England", v: 66 },
+    { n: "Kylian Mbappé", c: "France", v: 90 },
     { n: "Mesut Özil", c: "Germany", v: 92 },
+    { n: "Erling Haaland", c: "Norway", v: 43 },
   ];
 
   let POOL = FALLBACK;
-
-  /* try to upgrade to the baked pack silently */
-  PACKS.load("players")
+  PACKS.load("capless-photos")
     .then(pack => {
-      const pool = PACKS.caplessPool(pack, 40);
-      if (pool && pool.length >= 20) {
-        POOL = pool;
-        console.info("[Capless] data pack loaded:", pool.length, "players ·", PACKS.meta(pack)?.bakedAt?.slice(0, 10));
+      const photos = pack?.players || [];
+      const norm = s => String(s).normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const withFaces = photos
+        .map(p => {
+          const base = FALLBACK.find(f => norm(f.n) === norm(p.n));
+          return base ? Object.assign({}, base, { img: p.img, qid: p.qid }) : null;
+        })
+        .filter(Boolean);
+      if (withFaces.length >= 12) {
+        POOL = withFaces;
+        console.info("[Capless] photo pack merged:", withFaces.length);
       }
     })
-    .catch(() => {/* offline/sample mode */});
+    .catch(() => {});
 
   const MAX_ROUNDS = 12;
-  const roundTrack = [];
+  const app = document.getElementById("duel-app");
   let round = 1, pair = null, locked = false;
+  const roundTrack = [];
 
   function pickPair() {
     const pool = POOL.slice();
-    for (let tries = 0; tries < 80; tries++) {
+    for (let tries = 0; tries < 90; tries++) {
       const a = pool.splice((Math.random() * pool.length) | 0, 1)[0];
       const b = pool[(Math.random() * pool.length) | 0];
       if (!b) break;
-      const diff = Math.abs(a.v - b.v);
-      if (a.n !== b.n && diff >= 12) return [a, b];
+      if (a.n !== b.n && Math.abs(a.v - b.v) >= 12) return [a, b];
     }
-    return [POOL[0], POOL[7] || POOL[1]];
+    return [POOL[0], POOL[1] || POOL[0]];
   }
 
-  const app = document.getElementById("duel-app");
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
   function initials(n) {
     return n.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
   }
 
+  function cardHTML(p, side) {
+    const img = p.img
+      ? `<img class="dp-photo" src="${esc(p.img)}" alt="${esc(p.n)}" loading="eager"
+           onerror="this.classList.add('is-broken')">`
+      : `<div class="dp-photo dp-ph-fallback"><span>${initials(p.n)}</span></div>`;
+    return `
+      <figure class="dp-card" data-side="${side}" id="dp-${side}">
+        ${img}
+        <figcaption class="dp-plate">${esc(p.n)}</figcaption>
+        <div class="dp-meta">${esc(p.c || "")}</div>
+        <div class="dp-val">?</div>
+      </figure>`;
+  }
+
   function boardHTML() {
     return `
       <div class="round-track" id="round-track"></div>
-      <div class="duel-board">
-        <div class="duel-card" id="card-l">
-          <div class="avatar">${initials(pair[0].n)}</div>
-          <div class="who">${pair[0].n}</div>
-          <div class="ctry">${pair[0].c}</div>
-          <div class="val">?</div>
-        </div>
-        <div class="duel-vs">${T("versus")}</div>
-        <div class="duel-card" id="card-r">
-          <div class="avatar">${initials(pair[1].n)}</div>
-          <div class="who">${pair[1].n}</div>
-          <div class="ctry">${pair[1].c}</div>
-          <div class="val">?</div>
-        </div>
+      <div class="dp-question">${T("caps_instr")}</div>
+      <div class="dp-board">
+        ${cardHTML(pair[0], "l")}
+        <div class="dp-orcoin"><span>OR</span></div>
+        ${cardHTML(pair[1], "r")}
       </div>
-      <div class="choice-bar">
-        <button class="choice-btn" data-dir="left" aria-label="${T("more_choice")} ←">
-          ${Shell.icons.arrowL} ${T("more_choice")}
-        </button>
-        <button class="choice-btn" data-dir="right" aria-label="→ ${T("more_choice")}">
-          ${T("more_choice")} ${Shell.icons.arrowR}
-        </button>
+      <div class="dp-actions">
+        <button class="dp-pick" data-dir="l" aria-label="${T("more_choice")} — left">${Shell.icons.arrowL}</button>
+        <button class="dp-pick" data-dir="r" aria-label="${T("more_choice")} — right">${Shell.icons.arrowR}</button>
       </div>
-      <p class="wip-text" style="margin-top:16px;text-align:center;font-size:12.5px">
-        ${T("sample_note")}
-      </p>`;
+      <p class="wip-text" style="margin-top:14px;text-align:center;font-size:12.5px">${T("sample_note")}</p>`;
   }
 
   function paintTrack() {
     const t = app.querySelector("#round-track");
+    if (!t) return;
     t.innerHTML = Array.from({ length: MAX_ROUNDS }, (_, i) => {
       const state = roundTrack[i] === true ? "is-win" : roundTrack[i] === false ? "is-loss" : i === round - 1 && !locked ? "is-now" : "";
       return `<span class="round-dot ${state}"></span>`;
@@ -118,61 +122,55 @@
     locked = false;
     app.innerHTML = boardHTML();
     paintTrack();
-    app.querySelectorAll(".choice-btn").forEach(btn =>
-      btn.addEventListener("click", () => choose(btn))
-    );
+    app.querySelectorAll(".dp-pick").forEach(btn =>
+      btn.addEventListener("click", () => choose(btn)));
   }
 
   function choose(btn) {
     if (locked) return;
     locked = true;
     const dir = document.documentElement.dir === "rtl"
-      ? (btn.dataset.dir === "left" ? "right" : "left") /* visual sides flip under RTL */
+      ? (btn.dataset.dir === "l" ? "r" : "l")
       : btn.dataset.dir;
     const [l, r] = pair;
-    const correct = (l.v > r.v && dir === "left") || (r.v > l.v && dir === "right");
-    const wonRound = correct;
+    const correct = (l.v > r.v && dir === "l") || (r.v > l.v && dir === "r");
 
-    setTimeout(() => GL.sfx.reveal(), 150);
+    btn.classList.add("is-picked");
+    setTimeout(() => GL.sfx.reveal(), 140);
     setTimeout(() => {
-      const lc = app.querySelector("#card-l"), rc = app.querySelector("#card-r");
-      lc.querySelector(".val").textContent = l.v;
-      rc.querySelector(".val").textContent = r.v;
-      lc.classList.add("revealed", "anim-flip");
-      rc.classList.add("revealed", "anim-flip");
-      const winnerCard = l.v > r.v ? lc : rc;
-      winnerCard.classList.add("win-glow");
-      btn.classList.add(correct ? "picked-correct" : "picked-wrong");
+      const lc = app.querySelector("#dp-l"), rc = app.querySelector("#dp-r");
+      lc.querySelector(".dp-val").textContent = l.v.toLocaleString("en");
+      rc.querySelector(".dp-val").textContent = r.v.toLocaleString("en");
+      lc.classList.add("is-revealed", "anim-flip");
+      rc.classList.add("is-revealed", "anim-flip");
+      (l.v > r.v ? lc : rc).classList.add("is-winner");
+      btn.classList.add(correct ? "is-correct" : "is-wrong");
       setTimeout(() => {
-        wonRound ? GL.sfx.correct() : GL.sfx.wrong();
-        wonRound ? GL.confetti(36) : btn.closest(".choice-bar").classList.add("anim-shake");
-        GL.haptic(wonRound ? 12 : [10, 40, 10]);
-      }, 260);
-    }, 550);
+        correct ? (GL.sfx.correct(), GL.confetti(34)) : (GL.sfx.wrong(), GL.sfx.whistle());
+        GL.haptic(correct ? 12 : [10, 40, 10]);
+      }, 240);
+    }, 520);
 
-    roundTrack.push(wonRound);
+    roundTrack.push(correct);
     paintTrack();
-
-    setTimeout(() => finishOrNext(wonRound), 2400);
+    setTimeout(() => nextRound(correct), 2350);
   }
 
-  function scoreSoFar() { return roundTrack.filter(Boolean).length; }
-
-  function finishOrNext(lastWon) {
-    const gameOver = !lastWon || round >= MAX_ROUNDS;
-    if (!gameOver) { round++; newBoard(); return; }
-    endGame(scoreSoFar());
+  function nextRound(lastWon) {
+    if (!lastWon || round >= MAX_ROUNDS) { end(roundTrack.filter(Boolean).length); return; }
+    round++;
+    newBoard();
   }
 
   function shareText(score) {
     const balls = roundTrack.map(r => (r ? "🟢" : "🔴")).join("");
-    return `Footyless · Capless — ${score}/${MAX_ROUNDS} ${balls}\nCan you beat me? → footyless.com`;
+    return `Footyless · Capless — ${score}/${MAX_ROUNDS} ${balls}\nBeat me → footyless.com`;
   }
 
-  function endGame(score) {
+  function end(score) {
     const wonAll = score === MAX_ROUNDS;
     GL.recordResult("capless", { won: wonAll, score, max: MAX_ROUNDS });
-    if (wonAll || score >= 8) GL.sfx.win(); else GL.sfx.fanfare();
+    (wonAll || score >= 8) ? GL.sfx.win() : GL.sfx.fanfare();
 
     const st = GL.statsFor("capless");
     const quip = wonAll ? T("quip_perf") : score >= 8 ? T("quip_good") : T("quip_low");
@@ -184,7 +182,6 @@
         <div class="stat-chip"><div class="stat-chip__num">${st.played}</div><div class="stat-chip__label">${T("played")}</div></div>
       </div>
       <p style="text-align:center;margin-top:8px">${quip}</p>`;
-
     GL.openModal({
       title: wonAll ? T("perf_title") : T("ft_title"),
       bodyEl: body,
@@ -204,9 +201,7 @@
 
   /* ---------- boot ---------- */
   Shell.mount(".app", "capless");
-  document.getElementById("btn-restart").textContent = T("restart_label");
-  document.getElementById("btn-restart").setAttribute("aria-label", T("restart_aria"));
-  document.getElementById("btn-restart").addEventListener("click", restart);
-  document.querySelector(".caps-instr").textContent = T("caps_instr");
+  const rb = document.getElementById("btn-restart");
+  if (rb) { rb.textContent = T("restart_label"); rb.addEventListener("click", restart); }
   newBoard();
 })();

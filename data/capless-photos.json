@@ -1,0 +1,233 @@
+{
+ "_meta": {
+  "source": "Wikidata P18/P1350/P27",
+  "bakedAt": "2026-11-27T00:49:19.379Z",
+  "count": 28
+ },
+ "players": [
+  {
+   "qid": "Q11571",
+   "n": "Cristiano Ronaldo",
+   "c": "Portugal",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg/960px-Cristiano_Ronaldo_Croatia_v_Portugal_2_July_2026-075_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Cristiano Ronaldo Croatia v Portugal 2 July 2026-075 (cropped).jpg"
+  },
+  {
+   "qid": "Q615",
+   "n": "Lionel Messi",
+   "c": "Argentina",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c8/Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg/960px-Leo_Messi_Argentina_v_Egypt_7_July_2026-1.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Leo Messi Argentina v Egypt 7 July 2026-1.jpg"
+  },
+  {
+   "qid": "Q483837",
+   "n": "Luka Modrić",
+   "c": "Croatia",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/Luka_Modric_Croatia_v_Portugal_2_July_2026-055.jpg/960px-Luka_Modric_Croatia_v_Portugal_2_July_2026-055.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Luka Modric Croatia v Portugal 2 July 2026-055.jpg"
+  },
+  {
+   "qid": "Q483309",
+   "n": "Sergio Ramos",
+   "c": "Spain",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Sergio_Ramos_Interview_2021_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Sergio Ramos Interview 2021 (cropped).jpg"
+  },
+  {
+   "qid": "Q151269",
+   "n": "Robert Lewandowski",
+   "c": "Poland",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/6/6b/Robert_Lewandowski_2018%2C_JAP-POL_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Robert Lewandowski 2018, JAP-POL (cropped).jpg"
+  },
+  {
+   "qid": "Q561004",
+   "n": "Sunil Chhetri",
+   "c": "India",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/e/e5/The_President%2C_Shri_Ram_Nath_Kovind_presenting_the_Major_Dhyan_Chand_Khel_Ratna_Award%2C_2021_to_Shri_Sunil_Chhetri_for_Football%2C_at_Rashtrapati_Bhavan%2C_in_New_Delhi_on_13_November_2021_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "The President, Shri Ram Nath Kovind presenting the Major Dhyan Chand Khel Ratna Award, 2021 to Shri Sunil Chhetri for Football, at Rashtrapati Bhavan, in New Delhi on 13 November 2021 (cropped).jpg"
+  },
+  {
+   "qid": "Q68060",
+   "n": "Gianluigi Buffon",
+   "c": "Italy",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/54/Gianluigi_Buffon_%2831784615942%29_%28cropped%29.jpg/960px-Gianluigi_Buffon_%2831784615942%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Gianluigi Buffon (31784615942) (cropped).jpg"
+  },
+  {
+   "qid": "Q11584",
+   "n": "Iker Casillas",
+   "c": "Spain",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/0/0a/Iker_Casillas_2.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Iker Casillas 2.jpg"
+  },
+  {
+   "qid": "Q313161",
+   "n": "Claudio Bravo",
+   "c": "Chile",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/4/44/Chile_VS._Australia_%281cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Chile VS. Australia (1cropped).jpg"
+  },
+  {
+   "qid": "Q439722",
+   "n": "Son Heung-min",
+   "c": "South Korea",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/b0/BFA_2023_-2_Heung-Min_Son_%28cropped%29.jpg/960px-BFA_2023_-2_Heung-Min_Son_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "BFA 2023 -2 Heung-Min Son (cropped).jpg"
+  },
+  {
+   "qid": "Q43729",
+   "n": "Andrés Iniesta",
+   "c": "Spain",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Andr%C3%A9s_Iniesta_Argentina_v_Spain_19_July_2026-034_%28cropped%29.jpg/960px-Andr%C3%A9s_Iniesta_Argentina_v_Spain_19_July_2026-034_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Andrés Iniesta Argentina v Spain 19 July 2026-034 (cropped).jpg"
+  },
+  {
+   "qid": "Q142794",
+   "n": "Neymar",
+   "c": "Brazil",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg/960px-Neymar_Junior_Brazil_V_Morocco_13_June_2026-40.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Neymar Junior Brazil V Morocco 13 June 2026-40.jpg"
+  },
+  {
+   "qid": "Q214204",
+   "n": "Eden Hazard",
+   "c": "Belgium",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/4/46/Eden_Hazard_at_Baku_before_2019_UEFA_Europe_League_Final.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Eden Hazard at Baku before 2019 UEFA Europe League Final.jpg"
+  },
+  {
+   "qid": "Q46896",
+   "n": "Zlatan Ibrahimović",
+   "c": "Sweden",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Zlatan_Ibrahimovi%C4%87_nyc.jpg/960px-Zlatan_Ibrahimovi%C4%87_nyc.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Zlatan Ibrahimović nyc.jpg"
+  },
+  {
+   "qid": "Q44298",
+   "n": "Bastian Schweinsteiger",
+   "c": "Germany",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ac/Re-publica_23_-_Tag_3_%2852957826298%29_%28cropped%29.jpg/960px-Re-publica_23_-_Tag_3_%2852957826298%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Re-publica 23 - Tag 3 (52957826298) (cropped).jpg"
+  },
+  {
+   "qid": "Q266613",
+   "n": "Wayne Rooney",
+   "c": "United Kingdom",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/0/0c/Wayne-Rooney-2015-10-21.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Wayne-Rooney-2015-10-21.jpg"
+  },
+  {
+   "qid": "Q43926",
+   "n": "Andrea Pirlo",
+   "c": "Italy",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/6/6e/20150616_-_Portugal_-_Italie_-_Gen%C3%A8ve_-_Andrea_Pirlo_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "20150616 - Portugal - Italie - Genève - Andrea Pirlo (cropped).jpg"
+  },
+  {
+   "qid": "Q10520",
+   "n": "David Beckham",
+   "c": "United Kingdom",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/7/7a/David_Beckham_2009.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "David Beckham 2009.jpg"
+  },
+  {
+   "qid": "Q208104",
+   "n": "Xabi Alonso",
+   "c": "Spain",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/b/b6/Los_Caminos_del_f%C3%BAtbol._Xabi_Alonso_%2839666778464%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Los Caminos del fútbol. Xabi Alonso (39666778464) (cropped).jpg"
+  },
+  {
+   "qid": "Q459830",
+   "n": "Steven Gerrard",
+   "c": "United Kingdom",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/d/d5/Steven_Gerrard_2018.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Steven Gerrard 2018.jpg"
+  },
+  {
+   "qid": "Q21621995",
+   "n": "Kylian Mbappé",
+   "c": "France",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/95/Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg/960px-Kylian_Mbappe_France_v_Senegal_16_June_2026-391_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Kylian Mbappe France v Senegal 16 June 2026-391 (cropped).jpg"
+  },
+  {
+   "qid": "Q111918457",
+   "n": "Ronaldinho",
+   "c": null,
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/7/77/Ensaio_da_Acad%C3%AAmicos_do_Salgueiro_no_Samb%C3%B3dromo_2008_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Ensaio da Acadêmicos do Salgueiro no Sambódromo 2008 04.jpg"
+  },
+  {
+   "qid": "Q83488",
+   "n": "Mesut Özil",
+   "c": "Germany",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/1/12/Mesut_%C3%96zil_at_Baku_before_2019_UEFA_Europe_League_Final.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Mesut Özil at Baku before 2019 UEFA Europe League Final.jpg"
+  },
+  {
+   "qid": "Q969725",
+   "n": "Harry Kane",
+   "c": "United Kingdom",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a3/Harry_Kane_England_v_Ghana_23_June_2026-219_%28cropped%29.jpg/960px-Harry_Kane_England_v_Ghana_23_June_2026-219_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Harry Kane England v Ghana 23 June 2026-219 (cropped).jpg"
+  },
+  {
+   "qid": "Q1354960",
+   "n": "Mohamed Salah",
+   "c": "Egypt",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a6/Mohamed_Salah_Argentina_v_Egypt_7_July_2026-163_%28cropped%29.jpg/960px-Mohamed_Salah_Argentina_v_Egypt_7_July_2026-163_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Mohamed Salah Argentina v Egypt 7 July 2026-163 (cropped).jpg"
+  },
+  {
+   "qid": "Q28967995",
+   "n": "Erling Haaland",
+   "c": "Norway",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/08/Erling_Haaland_France_v_Norway_26_June_26-008_%28cropped%29.jpg/960px-Erling_Haaland_France_v_Norway_26_June_26-008_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Erling Haaland France v Norway 26 June 26-008 (cropped).jpg"
+  },
+  {
+   "qid": "Q1912",
+   "n": "Karim Benzema",
+   "c": "France",
+   "v": null,
+   "img": "https://upload.wikimedia.org/wikipedia/commons/9/96/Karim_Benzema_during_an_interview_in_2021_%282%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "file": "Karim Benzema during an interview in 2021 (2) (cropped).jpg"
+  },
+  {
+   "qid": "Q26517",
+   "n": "Luis Suárez",
+   "c": "Uruguay",
+   "v": null,
+   "img": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/ba/Luis_Su%C3%A1rez_NE_Revolution_Inter_Miami_7.9.25-053_%28cropped%29.jpg/960px-Luis_Su%C3%A1rez_NE_Revolution_Inter_Miami_7.9.25-053_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail",
+   "file": "Luis Suárez NE Revolution Inter Miami 7.9.25-053 (cropped).jpg"
+  }
+ ]
+}

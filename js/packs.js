@@ -20,6 +20,13 @@
 
   /* ---- game adapters ---- */
 
+  /* Capless photo pack (P18 portraits, baked from Wikidata) */
+  P.photoPool = function (pack) {
+    if (!pack || !Array.isArray(pack.players)) return null;
+    const ok = pack.players.filter(p => p.img && p.v >= 20 && p.v <= 220);
+    return ok.length >= 10 ? ok : null;
+  };
+
   /* Capless pool — QUALITY-GATED: Wikidata P1350 often mixes club appearances,
      so a pack entry only qualifies if it *looks* like genuine caps. */
   P.caplessPool = function (pack, minCaps = 30) {
