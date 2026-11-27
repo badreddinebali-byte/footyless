@@ -43,18 +43,27 @@
   ];
   let POOL = FALLBACK;
 
-  PACKS.load("players-v2").then(pack => {
-    const list = (pack?.players || []).filter(p => p.qid);
-    if (list.length >= 20) { POOL = list; console.info("[MoreLess] roster v2:", list.length); }
-  }).catch(() => {});
-
-  /* canonical photo registry lookup (site-wide consistency) */
+  /* canonical photo registry (site-wide consistent faces) */
   let PHOTOS = {};
-  PACKS.load("capless-photos").then(pk => {
-    (pk?.players || []).forEach(p => { if (p.qid) PHOTOS[p.qid] = p.img; });
-    (pk?.players || []).forEach(p => { if (!PHOTOS[p.qid] && p.img) PHOTOS[p.n.toLowerCase()] = p.img; });
-  }).catch(() => {});
-  function photoOf(p) { return p.img || PHOTOS[p.qid] || PHOTOS[p.n.toLowerCase()] || null; }
+
+  /* ---------- DATA BOOT: load packs FIRST, then start (race fix) ---------- */
+  async function loadData() {
+    const withTimeout = (p, ms) => Promise.race([p, new Promise(res => setTimeout(() => res(null), ms))]);
+    try {
+      const [v2, cp] = await Promise.all([
+        withTimeout(PACKS.load("players-v2"), 2500),
+        withTimeout(PACKS.load("capless-photos"), 2500),
+      ]);
+      if (v2?.players?.length >= 20) {
+        POOL = v2.players.filter(p => p.qid);
+      }
+      (cp?.players || []).forEach(p => { if (p.qid && p.img) PHOTOS[p.qid] = p.img; });
+      /* enrich v2 entries lacking local img with registry */
+      POOL.forEach(p => { if (!p.img && PHOTOS[p.qid]) p.img = PHOTOS[p.qid]; });
+    } catch (_) { /* fallback roster already in place */ }
+  }
+
+  function photoOf(p) { return p.img || PHOTOS[p.qid] || null; }
 
   /* ---------------- state ---------------- */
   const app = document.getElementById("duel-app");
@@ -99,15 +108,14 @@
   function boardHTML() {
     const cat = CATS[catIdx];
     return `
-      <div class="round-track" id="round-track"></div>
-      <div class="dp-catline"><span class="dp-caticon">${cat.icon}</span> ${T(cat.key)}</div>
-      <div class="dp-question">${T("ml_prompt")}</div>
+      <div class="dp-catline" data-catline><span class="dp-caticon">${cat.icon}</span> ${T(cat.key)}</div>
       <div class="dp-board">
         ${cardHTML(pair[0], "l")}
         <div class="dp-orcoin"><span>OR</span><span class="dp-progress" data-progress></span></div>
         ${cardHTML(pair[1], "r")}
       </div>
-      <p class="wip-text" style="margin-top:14px;text-align:center;font-size:12.5px">${T("ml_hint_tap")}</p>`;
+      <div class="round-track" id="round-track"></div>
+      <button class="dp-howto" id="btn-howto">${T("howto")}</button>`;
   }
 
   function paintTrack() {
@@ -131,7 +139,7 @@
   }
 
   function paintCatLine() {
-    const el = app.querySelector(".dp-catline");
+    const el = app.querySelector("[data-catline]");
     const cat = CATS[catIdx];
     if (el) el.innerHTML = `<span class="dp-caticon">${cat.icon}</span> ${T(cat.key)}`;
   }
@@ -142,12 +150,31 @@
     pair = pickPair(cat);
     app.innerHTML = boardHTML();
     if (withCatIntro) {
-      const line = app.querySelector(".dp-catline");
-      line.classList.add("anim-rise");
+      app.querySelector("[data-catline]").classList.add("anim-rise");
     }
     paintTrack();
     paintProgress();
     app.querySelectorAll(".dp-card").forEach(c => c.addEventListener("click", onPick));
+    app.querySelector("#btn-howto").addEventListener("click", openHowTo);
+  }
+
+  /* ---------------- how-to modal (lessgames clone) ---------------- */
+  function openHowTo() {
+    GL.sfx.howto ? GL.sfx.howto() : GL.sfx.tap();
+    const body = document.createElement("div");
+    body.innerHTML = `
+      <div class="ht-row"><p class="ht-lead">${T("ht_tapmore")}</p></div>
+      <div class="ht-demo">
+        <div class="ht-mini"><div class="ht-mini__img ht-mini__img--a"></div><span>A</span></div>
+        <div class="ht-or">OR</div>
+        <div class="ht-mini"><div class="ht-mini__img ht-mini__img--b"></div><span>B</span></div>
+      </div>
+      <p class="ht-note">${T("ht_categories")}</p>
+      <div class="ht-legend">
+        <span class="ht-chip ht-chip--ok">✓ ${T("ht_correct")}</span>
+        <span class="ht-chip ht-chip--no">✕ ${T("ht_wrong")}</span>
+      </div>`;
+    GL.openModal({ title: T("howto_title"), bodyEl: body, actions: [{ label: T("done"), variant: "btn-primary" }] });
   }
 
   /* ---------------- the pick + reveal choreography ---------------- */
@@ -187,13 +214,13 @@
       correct ? (GL.sfx.correct(), GL.confetti(30)) : (GL.sfx.wrong(), GL.sfx.whistle());
       GL.haptic(correct ? 14 : [12, 45, 12]);
 
-      /* verdict banner */
+      /* verdict banner replaces category line temporarily */
       const banner = document.createElement("div");
       banner.className = "dp-verdict " + (correct ? "is-ok" : "is-no");
       banner.innerHTML = correct
         ? `${gc(pair.find(x => x[cat.prop] === Math.max(lv, rv)))}<span>${T("verdict_ok")}</span>`
-        : `<span>${T("verdict_no")} · ${esc((lv > rv ? L : R).n)} ${cat.fmt(Math.max(lv, rv))}</span>`;
-      app.querySelector(".dp-question").replaceWith(banner);
+        : `<span>${T("verdict_no")} ${esc((lv > rv ? L : R).n)} ${cat.fmt(Math.max(lv, rv))}</span>`;
+      app.querySelector("[data-catline]").replaceWith(banner);
 
       rounds.push({ cat: cat.id, won: correct });
       paintTrack();
@@ -239,7 +266,7 @@
         if (catIdx >= CATS.length) { end(); return; }
         splash(catIdx - 1, catIdx, () => newBoard(true));
       } else {
-        /* brief OR-badge update & fresh pair */
+        /* restore category line (was replaced by verdict banner) */
         const stale = app.querySelector(".dp-board");
         stale?.classList.add("dp-out");
         setTimeout(() => newBoard(false), 260);
@@ -317,9 +344,9 @@
     GL.sfx.drum();
   }
 
-  /* ---------- boot ---------- */
+  /* ---------- boot: load data first, then start (race fix) ---------- */
   Shell.mount(".app", "moreless");
-  const rb = document.getElementById("btn-restart");
-  if (rb) { rb.textContent = T("restart_label"); rb.addEventListener("click", restart); }
-  restart();
+  loadData().finally(() => {
+    restart();
+  });
 })();

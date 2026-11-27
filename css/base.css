@@ -900,6 +900,113 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 }
 .choice-btn[disabled] { opacity: 0.55; cursor: default; }
 
+/* ---------- More/Less page: stripped shell + square cards (lessgames parity) ---------- */
+.ml-shell {
+  flex: 1;
+  width: 100%;
+  max-width: 1100px;
+  margin-inline: auto;
+  padding: 8px 16px 30px;
+  display: flex;
+  flex-direction: column;
+}
+.ml-shell .dp-catline {
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 2.4vw, 21px);
+  letter-spacing: .02em;
+  color: var(--fg);
+  margin: 10px 0 14px;
+  text-transform: none;
+}
+.ml-shell .dp-caticon { font-size: 21px; }
+
+/* cards: square, ~46vw cap, 16px gap — the 468px ratio */
+.ml-shell .dp-board {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  width: 100%;
+  perspective: 1200px;
+}
+.ml-shell .dp-card {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  border-radius: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+.ml-shell .dp-photo { object-position: center 22%; }
+.ml-shell .dp-plate {
+  bottom: 18px;
+  font-size: clamp(19px, 3vw, 30px);
+  font-weight: 600;
+  border-radius: 6px;
+  max-width: calc(100% - 36px);
+  margin-inline: auto;
+  inset-inline: 18px;
+  padding: 10px 16px;
+}
+
+/* progress dots BELOW cards, quiet */
+.ml-shell .round-track { margin: 16px 0 6px; }
+.ml-shell #round-track { display: flex; flex-wrap: wrap; justify-content: center; }
+
+/* how-to ghost button */
+.ml-shell { align-items: center; }
+.dp-howto {
+  margin: 12px auto 0;
+  display: inline-flex;
+  align-self: center;
+  padding: 9px 18px;
+  border-radius: var(--radius-pill);
+  color: var(--fg-muted);
+  font-size: 13.5px;
+  font-weight: 500;
+  border: 1px solid var(--hairline);
+  transition: color var(--dur-fast), border-color var(--dur-fast);
+}
+.dp-howto:hover { color: var(--fg); border-color: var(--fg-muted); }
+
+/* how-to modal demo */
+.ht-row { text-align: center; }
+.ht-lead { font-size: 15.5px; color: var(--fg); }
+.ht-demo {
+  display: flex; align-items: center; justify-content: center; gap: 14px;
+  margin: 16px 0;
+}
+.ht-mini {
+  width: 92px; height: 92px;
+  border-radius: 10px;
+  background: var(--bg-recessed);
+  box-shadow: inset 0 0 0 2px var(--hairline);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+  padding-bottom: 6px;
+  font-size: 12px; color: var(--fg-muted);
+  overflow: hidden;
+}
+.ht-mini__img { width: 100%; height: 74%; }
+.ht-mini__img--a { background: linear-gradient(145deg, var(--answer-correct), transparent 130%); }
+.ht-mini__img--b { background: linear-gradient(215deg, var(--answer-warm), transparent 130%); }
+.ht-or {
+  font-family: var(--font-display); font-weight: 700; font-size: 13px;
+  width: 40px; height: 40px; border-radius: 50%;
+  background: #ECECEC; color: #161819;
+  display: flex; align-items: center; justify-content: center;
+}
+[data-theme="light"] .ht-or { background: #161819; color: #ECECEC; }
+.ht-note { text-align: center; color: var(--fg-muted); font-size: 13.5px; margin: 6px 0 12px; }
+.ht-legend { display: flex; justify-content: center; gap: 12px; }
+.ht-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 13.5px; font-weight: 600;
+}
+.ht-chip--ok { background: color-mix(in srgb, var(--answer-correct) 22%, transparent); color: var(--answer-correct); }
+.ht-chip--no { background: color-mix(in srgb, var(--answer-wrong) 20%, transparent); color: var(--answer-wrong); }
+
 /* ---------- Kitless stage ---------- */
 .kit-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 #kit-canvas {
