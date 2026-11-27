@@ -24,70 +24,76 @@
     rotate:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2.5"/><path d="M21 8a9 9 0 0 0-3.5-4.6M3 16a9 9 0 0 0 3.5 4.6"/><path d="M21 4v4h-4M3 20v-4h4"/></svg>',
   };
 
-  /* ---------------- original decorative card art ---------------- */
+  /* ---------------- flat pictogram card art (instantly readable) ---------------- */
+  const FG = "var(--fg)", DIM = "var(--fg-muted)", GOOD = "var(--answer-correct)", BAD = "var(--answer-wrong)", WARM = "var(--answer-warm)";
   const ART = {
-    pitch: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <rect x="230" y="-30" width="230" height="260" rx="14" fill="var(--answer-correct)"/>
-      <rect x="262" y="0" width="196" height="196" rx="10" fill="none" stroke="var(--bg)" stroke-width="6" opacity=".85"/>
-      <path d="M262 78h58a40 40 0 0 1 0 40h-58" fill="none" stroke="var(--bg)" stroke-width="6" opacity=".85"/>
-      <circle cx="360" cy="98" r="30" fill="none" stroke="var(--bg)" stroke-width="6" opacity=".85"/>
-      <circle cx="330" cy="30" r="34" fill="var(--bg)"/>
-      <path d="M330 12l17 12-6.5 20h-21L313 24Z" fill="var(--answer-correct)"/>
-    </svg>`,
+    /* More/Less: green UP + red DOWN arrows (their signature) */
     wave: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <g fill="var(--answer-warm)">
-        <rect x="238" y="70" width="18" height="86" rx="9"/>
-        <rect x="266" y="38" width="18" height="118" rx="9"/>
-        <rect x="294" y="82" width="18" height="74" rx="9"/>
-        <rect x="322" y="14" width="18" height="142" rx="9"/>
-        <rect x="350" y="56" width="18" height="100" rx="9"/>
+      <g stroke-linecap="round" stroke-width="34" fill="none">
+        <path d="M295 165V55" stroke="${GOOD}"/>
+        <path d="M262 88 295 52l33 36" stroke="${GOOD}"/>
+        <path d="M365 40v110" stroke="${BAD}"/>
+        <path d="M332 112l33 36 33-36" stroke="${BAD}"/>
       </g>
-      <circle cx="376" cy="52" r="26" fill="var(--answer-warm)"/>
-      <path d="M368 44v18l15-9Z" fill="var(--tile)"/>
     </svg>`,
-    shuttle: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <rect x="235" y="20" width="150" height="120" rx="16" fill="var(--bg)"/>
-      <rect x="255" y="38" width="110" height="26" rx="13" fill="var(--answer-correct)"/>
-      <rect x="255" y="74" width="82" height="26" rx="13" fill="var(--answer-correct)"/>
-      <rect x="255" y="110" width="52" height="26" rx="13" fill="var(--answer-wrong)"/>
-      <path d="M282 158l18 26-7-26Zm26 0l18 26-7-26Z" fill="var(--bg)"/>
-    </svg>`,
-    dart: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <g fill="none" stroke="var(--answer-warm)" stroke-width="7">
-        <circle cx="325" cy="95" r="76"/><circle cx="325" cy="95" r="50"/><circle cx="325" cy="95" r="24"/>
+    /* Scoreless: goal net + ball */
+    pitch: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
+      <g fill="none" stroke="${FG}" stroke-width="9">
+        <rect x="250" y="30" width="140" height="120" rx="6"/>
+        <path d="M250 70h140M250 110h140M290 30v120M330 30v120M370 30v120M270 70l40 40M310 70l40 40M350 70l30 30M290 30l40 40M330 30l40 40"/>
       </g>
-      <path d="M244 176 320 100" stroke="var(--bg)" stroke-width="10" stroke-linecap="round"/>
-      <path d="M320 100l28-28" stroke="var(--answer-correct)" stroke-width="10" stroke-linecap="round"/>
+      <circle cx="315" cy="92" r="17" fill="${WARM}"/>
+      <path d="M308 86h14M308 98h14M315 82v20" stroke="${FG}" stroke-width="3"/>
     </svg>`,
-    stair: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <g fill="var(--answer-correct)">
-        <rect x="238" y="138" width="34" height="40" rx="4"/>
-        <rect x="280" y="110" width="34" height="68" rx="4"/>
-        <rect x="322" y="76" width="34" height="102" rx="4"/>
-        <path d="M370 34h8v144h-8z" opacity=".45"/>
-      </g>
-      <path d="M244 128 306 84l20 12 30-46" fill="none" stroke="var(--bg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M344 40h14v14" fill="none" stroke="var(--bg)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>`,
+    /* Kitless: hooped jersey */
     scarf: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <rect x="240" y="16" width="52" height="150" rx="10" fill="var(--answer-wrong)"/>
-      <rect x="246" y="40" width="40" height="14" fill="var(--bg)" opacity=".85"/>
-      <rect x="246" y="70" width="40" height="14" fill="var(--bg)" opacity=".85"/>
-      <rect x="246" y="100" width="40" height="14" fill="var(--bg)" opacity=".85"/>
-      <path d="M300 30c26 0 44 10 52 24-20-4-34 0-44 10 16 4 26 12 30 24-18-6-34-4-46 6l-10-8Z" fill="var(--answer-correct)"/>
+      <path d="M268 42l30-14c8 10 36 10 44 0l30 14 26 30-28 22-6-8V186h-88V86l-6 8-26-30Z" fill="${FG}"/>
+      <g stroke="var(--tile)" stroke-width="8">
+        <path d="M290 84v90M310 74v102M350 74v102M370 84v90"/>
+      </g>
     </svg>`,
+    /* Missing XI: pitch with dots */
     eleven: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
-      <path d="M40 190V96a30 30 0 0 1 12-24l70-52 70 52a30 30 0 0 1 12 24v94Z" fill="none" stroke="var(--answer-correct)" stroke-width="7" opacity=".5" transform="translate(150 0)"/>
-      <g fill="var(--answer-correct)">
-        <circle cx="365" cy="40" r="17"/><rect x="354" y="60" width="22" height="26" rx="7"/>
-        <circle cx="322" cy="76" r="17"/><rect x="311" y="96" width="22" height="26" rx="7"/>
-        <circle cx="308" cy="128" r="17"/><rect x="297" y="148" width="22" height="26" rx="7"/>
-        <circle cx="352" cy="150" r="17"/><rect x="341" y="170" width="22" height="26" rx="7"/>
+      <rect x="245" y="14" width="150" height="176" rx="10" fill="none" stroke="${GOOD}" stroke-width="8"/>
+      <path d="M245 102h150" stroke="${GOOD}" stroke-width="6" opacity=".7"/>
+      <rect x="292" y="14" width="56" height="34" fill="none" stroke="${GOOD}" stroke-width="5" opacity=".7"/>
+      <g fill="${FG}">
+        <circle cx="320" cy="160" r="11"/>
+        <circle cx="268" cy="122" r="11"/><circle cx="302" cy="128" r="11"/><circle cx="338" cy="128" r="11"/><circle cx="372" cy="122" r="11"/>
+        <circle cx="262" cy="84" r="11"/><circle cx="320" cy="90" r="11"/><circle cx="378" cy="84" r="11"/>
+        <circle cx="290" cy="48" r="11"/><circle cx="350" cy="48" r="11"/>
       </g>
-      <g fill="var(--bg)" opacity=".55">
-        <circle cx="365" cy="40" r="17"/><circle cx="322" cy="76" r="17"/><circle cx="308" cy="128" r="17"/><circle cx="352" cy="150" r="17"/>
+      <circle cx="320" cy="26" r="7" fill="${WARM}"/>
+    </svg>`,
+    /* Groundless: stadium bowl */
+    dart: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
+      <ellipse cx="320" cy="112" rx="72" ry="58" fill="none" stroke="${FG}" stroke-width="9"/>
+      <ellipse cx="320" cy="104" rx="44" ry="34" fill="none" stroke="${DIM}" stroke-width="6"/>
+      <g stroke="${FG}" stroke-width="5" opacity=".8">
+        <path d="M262 84l116 0M254 104h132M262 124l116 0M276 66v92M304 56v110M336 56v110M364 66v92"/>
       </g>
-      <path d="M348 40h34M338 79l-23 23M338 141l-16 14" stroke="var(--answer-correct)" stroke-width="4" stroke-dasharray="5 5"/>
+      <circle cx="320" cy="104" r="9" fill="${GOOD}"/>
+    </svg>`,
+    /* Statless: rising bars + trend */
+    stair: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
+      <g fill="${GOOD}">
+        <rect x="260" y="120" width="26" height="52" rx="4"/>
+        <rect x="296" y="96" width="26" height="76" rx="4"/>
+        <rect x="332" y="66" width="26" height="106" rx="4"/>
+      </g>
+      <path d="M258 108 348 52" stroke="${WARM}" stroke-width="8" stroke-linecap="round"/>
+      <path d="M348 52l-16 2m16-2-2 16" stroke="${WARM}" stroke-width="8" stroke-linecap="round"/>
+      <circle cx="290" cy="86" r="6" fill="${FG}"/><circle cx="326" cy="62" r="6" fill="${FG}"/>
+    </svg>`,
+    /* Legendless: star career path */
+    shuttle: `<svg class="game-card__art" viewBox="0 0 400 200" aria-hidden="true">
+      <path d="M258 150c30-8 34-52 66-56 28-4 34-38 66-40" fill="none" stroke="${DIM}" stroke-width="7" stroke-dasharray="2 14" stroke-linecap="round"/>
+      <path d="M258 150c30-8 34-52 66-56 28-4 34-38 66-40" fill="none" stroke="${FG}" stroke-width="7" stroke-linecap="round" opacity=".4"/>
+      <g fill="${WARM}">
+        <path d="M266 132l7 14 15 2-11 11 3 15-14-7-14 7 3-15-11-11 15-2Z"/>
+        <path d="M392 42l5 10 11 2-8 8 2 11-10-5-10 5 2-11-8-8 11-2Z"/>
+      </g>
+      <circle cx="324" cy="94" r="9" fill="${FG}"/>
     </svg>`,
   };
 
@@ -133,27 +139,95 @@
   }
 
   function buildDrawer(activeNav) {
+    /* helper: simple icon link */
     const item = (href, icon, label, slug) =>
-      `<a class="drawer-link${activeNav === slug ? " is-active" : ""}" href="${ROOT}${href}" data-nav>${icon}<span>${label}</span></a>`;
+      `<a class="drawer-link${activeNav === slug ? " is-active" : ""}" href="${href}" data-nav>${icon}<span>${label}</span></a>`;
+
+    /* game shortcuts with expandable sub-items (Play / How-to) */
+    const gameLinks = Shell.GAMES.slice(0, 4).map((g, i) => `
+      <div class="drawer-game" data-game="${g.slug}">
+        <button class="drawer-game__head${activeNav === g.slug ? " is-active" : ""}" data-expand="${g.slug}" aria-expanded="false">
+          <span>${g.title.toUpperCase()}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" class="drawer-chev"><path d="m6 9 6 6 6-6"/></svg>
+        </button>
+        <div class="drawer-game__sub" data-sub="${g.slug}">
+          <a class="drawer-sublink" href="${ROOT}games/${g.slug}/index.html"><span>●</span> Play</a>
+          <a class="drawer-sublink" href="${ROOT}games/${g.slug}/index.html#howto"><span>○</span> How to play</a>
+        </div>
+      </div>`).join("");
+
+    /* activity calendar: current month, from local results */
+    const now = new Date();
+    const monthName = now.toLocaleDateString(undefined, { month: "long" }).toUpperCase();
+    const y = now.getFullYear(), m = now.getMonth();
+    const firstDay = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m + 1, 0).getDate();
+    /* played-days set across all games */
+    const played = new Set();
+    Shell.GAMES.forEach(g => GL.getResults(g.slug).forEach(r => r.date && played.add(r.date)));
+    const iso = d => `${y}-${String(m + 1).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const todayD = now.getDate();
+    const streak = (() => {
+      /* current streak: consecutive played days ending today/yesterday */
+      let n = 0; const probe = new Date();
+      if (!played.has(iso(todayD))) probe.setDate(probe.getDate() - 1);
+      while (played.has(isoD(probe))) { n++; probe.setDate(probe.getDate() - 1); }
+      return n;
+      function isoD(d) { return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`; }
+    })();
+
+    let cal = "";
+    for (let i = 0; i < firstDay; i++) cal += `<span class="cal-day is-empty"></span>`;
+    for (let d = 1; d <= daysInMonth; d++) {
+      const isPlayed = played.has(iso(d));
+      const isToday = d === todayD;
+      cal += `<span class="cal-day${isPlayed ? " is-played" : ""}${isToday ? " is-today" : ""}">${d}</span>`;
+    }
+
     return `
       <div class="drawer-layer" id="drawer-layer" aria-hidden="true">
         <div class="drawer-backdrop" data-drawer-close></div>
         <nav class="drawer" aria-label="Main menu">
           <div class="drawer-head">
-            <span class="wordmark" style="font-size:20px">FOOTYLESS<span class="ball-dot"></span></span>
+            <span class="wordmark" style="font-size:24px">FOOTYLESS<span class="ball-dot"></span></span>
             <button class="icon-btn" data-drawer-close aria-label="Close menu">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
             </button>
           </div>
-          <div class="drawer-nav">
-            ${item("index.html", I.home, T("home"), "home")}
-            ${item("stats.html", I.chart, T("stats_nav"), "stats")}
-            ${item("#", I.trophy, T("achievements"), "achv")}
-            ${item("#", I.info, T("about"), "about")}
+
+          <div class="drawer-games">
+            ${gameLinks}
           </div>
+
+          <div class="drawer-activity">
+            <div class="da-head">
+              <span>${monthName} ACTIVITY</span>
+              <span class="da-count">⟳ <b data-drawer-countdown>--:--:--</b></span>
+            </div>
+            <div class="da-cal">${cal}</div>
+            <div class="da-streak">${streak > 0
+              ? T("drawer_streak_on", { n: streak })
+              : T("drawer_streak_off")}</div>
+          </div>
+
+          <div class="drawer-nav" style="margin-top:6px">
+            ${item("#", I.trophy, T("achievements"), "achv")}
+            ${item(ROOT + "stats.html", I.chart, T("stats_nav"), "stats")}
+          </div>
+
+          <a class="drawer-feedback" href="mailto:hello@footyless.com?subject=Footyless%20feedback">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+            ${T("feedback")}
+          </a>
+
           <div class="drawer-foot">
-            <span>v${GL.version} · concept build</span>
-            <span>${T("drawer_foot")}</span>
+            <div class="drawer-foot__links">
+              <a href="#" data-soon>${T("about")}</a>
+              <a href="#" data-soon>${T("changelog")}</a>
+              <a href="#" data-soon>${T("terms")}</a>
+              <a href="#" data-soon>${T("privacy")}</a>
+            </div>
+            <span>v${GL.version} · ${T("drawer_foot")}</span>
           </div>
         </nav>
       </div>`;
@@ -169,6 +243,29 @@
     $("#btn-prefs").addEventListener("click", () => { GL.sfx.tap(); openSettings(); });
     $("#btn-supporter").addEventListener("click", () => { GL.sfx.tap(); openSupporter(); });
     $("#btn-stats").addEventListener("click", () => { GL.sfx.tap(); location.href = ROOT + "stats.html"; });
+
+    /* drawer: expandable games + countdown + soon-links */
+    const dl = document.getElementById("drawer-layer");
+    dl.addEventListener("click", e => {
+      if (e.target.closest("[data-drawer-close]")) { openDrawer(false); return; }
+      const exp = e.target.closest("[data-expand]");
+      if (exp) {
+        const slug = exp.dataset.expand;
+        const sub = dl.querySelector(`[data-sub="${slug}"]`);
+        const isOpen = sub.classList.toggle("is-open");
+        exp.setAttribute("aria-expanded", String(isOpen));
+        GL.sfx.tap();
+        return;
+      }
+      if (e.target.closest("[data-nav]")) GL.sfx.swish();
+      const dead = e.target.closest('.drawer-link[href="#"], .drawer-foot a[href="#"]');
+      if (dead) { e.preventDefault(); openDrawer(false); GL.toast(T("nav_coming")); }
+    });
+    /* countdown inside drawer */
+    const cd = dl.querySelector("[data-drawer-countdown]");
+    if (cd) countdownInto(ms => { cd.textContent = GL.fmtHMS(ms); });
+
+    mountRotateBlocker();
     $("#btn-archive").addEventListener("click", () => {
       GL.sfx.tap();
       GL.openModal({
@@ -182,15 +279,7 @@
       GL.toast(T("accounts_toast"));
     });
 
-    document.getElementById("drawer-layer").addEventListener("click", e => {
-      if (e.target.closest("[data-drawer-close]")) openDrawer(false);
-      if (e.target.closest("[data-nav]")) GL.sfx.swoosh();
-      const dead = e.target.closest('.drawer-link[href="#"]');
-      if (dead) {
-        e.preventDefault(); openDrawer(false);
-        GL.toast(T("nav_coming"));
-      }
-    });
+    document.getElementById("drawer-layer").dataset.wired = "1";
 
     mountRotateBlocker();
 
@@ -204,7 +293,7 @@
     const layer = document.getElementById("drawer-layer");
     layer.classList.toggle("is-open", open);
     layer.setAttribute("aria-hidden", String(!open));
-    GL.sfx.swoosh();
+    open ? GL.sfx.openUI() : GL.sfx.closeUI();
   }
 
   /* ---------------- supporter pass modal ---------------- */

@@ -104,42 +104,45 @@
   }
 
   const sfx = (() => {
-    /* --- 1) Howler-backed WAV engine (lessgames-style), with graceful synth fallback --- */
+    /* --- 1) WAV engine: Kenney CC0 UI pack (assets/audio/ui) + game stingers, with synth fallback --- */
     const ROOT = document.body.dataset.page === "game" ? "../../" : "";
-    const LIB = ["button","switch","type","backspace","cell_reveal","correct","wrong","won","lost","finished","whistle","drum"];
-    let howls = null, crowd = null;
+    const LIB = {
+      tap: "ui/tap", select: "ui/select", reveal: "ui/reveal", correct: "ui/correct",
+      wrong: "ui/wrong", won: "ui/win", lost: "ui/lost", open: "ui/open", close: "ui/close",
+      tick: "ui/tick", intro: "ui/intro", swish: "ui/swish", howto: "ui/howto",
+      drum: "drum", whistle: "whistle", finished: "finished",
+    };
+    let howls = null;
     function initHowler() {
       if (howls || !window.Howl) return;
       howls = {};
-      LIB.forEach(name => {
-        try {
-          howls[name] = new Howl({ src: [`${ROOT}assets/audio/${name}.wav`], preload: true, volume: 0.85 });
-        } catch (_) {}
+      Object.entries(LIB).forEach(([name, path]) => {
+        try { howls[name] = new Howl({ src: [`${ROOT}assets/audio/${path}.wav`], preload: true, volume: name === "drum" ? 0.8 : 0.7 }); } catch (_) {}
       });
-      try {
-        crowd = new Howl({ src: [`${ROOT}assets/audio/crowd.wav`], loop: true, volume: 0, preload: true });
-      } catch (_) {}
     }
     function wav(name) {
       if (!settings.sfx) return true;
       initHowler();
       const h = howls && howls[name];
       if (h) { h.play(); return true; }
-      return false; // caller falls back to synth
+      return false;
     }
     return {
-      tap()    { if (!wav("button"))  tone({ freq: 520, dur: 0.05, type: "sine", gain: 0.12 }); },
-      press()  { if (!wav("switch"))  tone({ freq: 300, endFreq: 190, dur: 0.09, type: "triangle", gain: 0.14 }); },
-      swoosh() { if (!wav("backspace")) noise({ dur: 0.16, gain: 0.06, hp: 1200 }); },
-      type()   { if (!wav("type"))    tone({ freq: 940, dur: 0.03, gain: 0.1 }); },
-      reveal() { if (!wav("cell_reveal")) { tone({ freq: 660, dur: 0.07, gain: 0.1 }); tone({ freq: 990, dur: 0.09, gain: 0.08, delay: 0.06 }); } },
-      correct(){ if (!wav("correct")) { tone({ freq: 659, dur: 0.11, gain: 0.14 }); tone({ freq: 880, dur: 0.16, gain: 0.13, delay: 0.09 }); } },
-      wrong()  { if (!wav("wrong"))   { tone({ freq: 170, endFreq: 120, dur: 0.22, type: "sawtooth", gain: 0.12 }); tone({ freq: 110, dur: 0.24, type: "square", gain: 0.05, delay: 0.03 }); } },
-      win()    { if (!wav("won"))     [523, 659, 784, 1046].forEach((f, i) => tone({ freq: f, dur: 0.16, gain: 0.12, delay: i * 0.09 })); },
-      whistle(){ if (!wav("whistle")) tone({ freq: 2100, dur: 0.45, type: "square", gain: 0.06 }); },
-      drum()   { if (!wav("drum"))    { tone({ freq: 150, endFreq: 40, dur: 0.14, type: "sine", gain: 0.3 }); noise({ dur: 0.05, gain: 0.08, hp: 200 }); } },
-      tick()   { tone({ freq: 1100, dur: 0.02, gain: 0.05 }); },
-      fanfare(){ if (!wav("finished")) [392, 523, 659, 784, 1046, 1318].forEach((f, i) => tone({ freq: f, dur: 0.18, gain: 0.11, delay: i * 0.07 })); },
+      tap()    { wav("tap"); },
+      press()  { wav("select"); },
+      swoosh() { wav("swish"); },
+      type()   { wav("tick"); },
+      reveal() { wav("reveal"); },
+      correct(){ wav("correct"); },
+      wrong()  { wav("wrong"); },
+      win()    { wav("won"); },
+      lost()   { wav("lost"); },
+      whistle(){ wav("whistle"); },
+      drum()   { wav("intro"); },
+      tick()   { wav("tick"); },
+      fanfare(){ wav("finished"); },
+      openUI() { wav("open"); },
+      closeUI(){ wav("close"); },
     };
   })();
 
