@@ -245,7 +245,6 @@
           for (let i = 0; i < fv.length; i++)
             s += (i / fv.length) < t ? fv[i] : frames[(Math.random() * 10) | 0];
           el.textContent = s;
-          GL.sfx.tick();
           requestAnimationFrame(frame);
         } else {
           el.textContent = String(finalVal);

@@ -1,5 +1,5 @@
 /* ============================================================
-   GOALESS — design system
+   GOALESS â€” design system
    Inspired by the crisp dark game-hub aesthetic. Original code.
    ============================================================ */
 
@@ -285,7 +285,7 @@ ul, ol { list-style: none; }
   .game-card:hover .game-card__art { transform: translate(-3px, -3px) scale(1.04); }
 }
 
-/* countdown strip — quieter */
+/* countdown strip â€” quieter */
 .daily-strip {
   margin-top: 26px;
   display: inline-flex;
@@ -904,7 +904,7 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 .ml-shell {
   flex: 1;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1500px;
   margin-inline: auto;
   padding: 8px 16px 30px;
   display: flex;
@@ -922,7 +922,7 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 }
 .ml-shell .dp-caticon { font-size: 21px; }
 
-/* cards: square, ~46vw cap, 16px gap — the 468px ratio */
+/* cards: square, ~46vw cap, 16px gap â€” the 468px ratio */
 .ml-shell .dp-board {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -955,6 +955,7 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 
 /* how-to ghost button */
 .ml-shell { align-items: center; }
+.ml-shell #duel-app { width: 100%; }
 .dp-howto {
   margin: 12px auto 0;
   display: inline-flex;
