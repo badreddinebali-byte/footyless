@@ -44,7 +44,13 @@
         </div>
       </div>`;
     app.querySelectorAll(".mx2-mode").forEach(b =>
-      b.addEventListener("click", () => { hard = b.dataset.mode === "hard"; GL.sfx.press(); startRun(); }));
+      b.addEventListener("click", () => {
+      hard = b.dataset.mode === "hard";
+      GL.sfx.press();
+      const saved = GL.store.get("mx-run-" + GL.todayStr(), null);
+      if (saved && saved.hard === hard && saved.fxId === fx.id && saved.S) { S = saved.S; renderPitch(); }
+      else startRun();
+    }));
   }
 
   /* ================= VIEW: PITCH ================= */
@@ -110,7 +116,7 @@
     app.querySelectorAll("[data-shirt]").forEach(el =>
       el.addEventListener("click", () => openWordle(+el.dataset.shirt)));
     app.querySelector("#mx-giveup").addEventListener("click", confirmGiveUp);
-    app.querySelector("#mx-restart").addEventListener("click", () => renderStart());
+    app.querySelector("#mx-restart").addEventListener("click", () => newMatch(true));
   }
 
   function shirtHTML(p, i) {
@@ -270,12 +276,12 @@
     }
   }
 
-  function closeWordle() {
+  function closeWordle() { persistRun();
     /* BACK keeps progress: rows/tries preserved in S */
     GL.sfx.closeUI();
     backToPitch();
   }
-  function backToPitch() {
+  function backToPitch() { persistRun();
     activeSlot = -1;
     renderPitch();
     if (S.every(x => x.solved || x.failed) && failedCount() > 2) endNormal();
@@ -345,9 +351,36 @@
     return `Footyless · Missing XI — ${fx.home} ${fx.score} ${fx.away} (${fx.note})\n${shareMarks(res)}\n${res.solved}/11 · ${fx.season}\nName yours → footyless.com`;
   }
 
-  function newMatch() {
-    fx = M.FIXTURES[(Math.random() * M.FIXTURES.length) | 0];
-    renderStart();
+  function newMatch(randomDraw) {
+    /* daily fixture = seeded by UTC date + mode; everyone worldwide same game.
+       Practice/extras (New match button, Rematch) draw randomly. */
+    if (randomDraw) {
+      fx = M.FIXTURES[(Math.random() * M.FIXTURES.length) | 0];
+      /* avoid same-fixture boredom vs last played */
+      const last = GL.store.get("mx-last", null);
+      if (M.FIXTURES.length > 1 && fx.id === last) {
+        fx = M.FIXTURES[(M.FIXTURES.indexOf(fx) + 1) % M.FIXTURES.length];
+      }
+      GL.store.set("mx-last", fx.id);
+    } else {
+      const rng = GL.dailyRng("missingxi");
+      const dayIdx = Math.floor(rng() * M.FIXTURES.length);
+      fx = M.FIXTURES[dayIdx];
+      /* progress persistence: resume today's fixture if abandoned mid-run */
+      const saved = GL.store.get("mx-run-" + GL.todayStr(), null);
+      if (saved && saved.fxId === fx.id) {
+        S = saved.S;
+        hard = saved.hard;
+      } else {
+        S = null;
+      }
+    }
+    if (S) { renderPitch(); } else { renderStart(); }
+  }
+
+  function persistRun() {
+    if (!S) return;
+    GL.store.set("mx-run-" + GL.todayStr(), { fxId: fx.id, hard, S });
   }
 
   /* ---------- boot ---------- */
