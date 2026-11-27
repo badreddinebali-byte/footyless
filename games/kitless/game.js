@@ -73,9 +73,17 @@
     }).join("");
   }
 
+  /* ---- daily deterministic shirt sequence ---- */
+  let KRNG = Math.random;
+  function makeSeedRng(seedStr) {
+    let h = 2166136261;
+    for (let i = 0; i < seedStr.length; i++) { h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+    let a = h >>> 0;
+    return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
   function newRound() {
     busy = false; wrongs = 0; level = 0;
-    const answer = K.CLUBS[(Math.random() * K.CLUBS.length) | 0];
+    const answer = K.CLUBS[(KRNG() * K.CLUBS.length) | 0];
     shirt = { answer };
     app.innerHTML = boardHTML(pickChoices(answer));
     loadShirt(answer);
@@ -162,15 +170,16 @@
       title: res.won ? T("perf_title") : T("ft_title"),
       bodyEl: body,
       actions: [
-        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(); } },
+        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(true); } },
         { label: T("share"), variant: "btn-secondary", onClick: () => GL.copyText(shareText(res)) },
       ],
     });
     GL.confetti(res.won ? 150 : 40);
   }
 
-  function restart() {
+  function restart(practice) {
     round = 1; track = [];
+    KRNG = practice ? Math.random : makeSeedRng(GL.todayStr() + "|kitless");
     newRound();
     GL.sfx.drum();
   }
@@ -179,5 +188,6 @@
   Shell.mount(".app", "kitless");
   const rb = document.getElementById("btn-restart");
   if (rb) { rb.textContent = T("restart_label"); rb.addEventListener("click", restart); }
+  KRNG = makeSeedRng(GL.todayStr() + "|kitless");
   newRound();
 })();

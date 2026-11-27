@@ -75,17 +75,30 @@
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const initials = n => n.split(" ").filter(Boolean).slice(0, 2).map(w => w[0]).join("").toUpperCase();
 
+  /* ---- daily deterministic RNG ---- */
+  let DAILY = { rng: Math.random, practice: false };
+  function makeDailyRng(seedStr) {
+    let h = 2166136261;
+    for (let i = 0; i < seedStr.length; i++) { h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+    let a = h >>> 0;
+    return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
+  function initRng(practice) {
+    DAILY.practice = practice;
+    DAILY.rng = practice ? Math.random : makeDailyRng(GL.todayStr() + "|moreless");
+    usedPairs.clear();
+  }
   function pickPair(cat) {
     const prop = cat.prop;
     for (let tries = 0; tries < 120; tries++) {
-      const a = POOL[(Math.random() * POOL.length) | 0];
-      const b = POOL[(Math.random() * POOL.length) | 0];
+      const a = POOL[(DAILY.rng() * POOL.length) | 0];
+      const b = POOL[(DAILY.rng() * POOL.length) | 0];
       if (!b || a.n === b.n) continue;
       if (a[prop] === b[prop]) continue;         // no-brainer: ties are boring here; ties elsewhere still count correct
       const key = [cat.id, [a.n, b.n].sort().join("&")].join("|");
       if (usedPairs.has(key)) continue;
       usedPairs.add(key);
-      return Math.random() < 0.5 ? [a, b] : [b, a];
+      return DAILY.rng() < 0.5 ? [a, b] : [b, a];
     }
     const a = POOL[0], b = POOL[1];
     return [a, b];
@@ -329,15 +342,16 @@
       title: wonAll ? T("perf_title") : T("ft_title"),
       bodyEl: body,
       actions: [
-        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(); } },
+        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(true); } },
         { label: T("share"), variant: "btn-secondary", onClick: () => GL.copyText(shareText(score)) },
       ],
     });
     GL.confetti(wonAll ? 170 : 60);
   }
 
-  function restart() {
-    catIdx = 0; roundInCat = 0; rounds.length = 0; usedPairs.clear();
+  function restart(practice) {
+    catIdx = 0; roundInCat = 0; rounds.length = 0;
+    initRng(!!practice);
     newBoard(true);
     GL.sfx.drum();
   }

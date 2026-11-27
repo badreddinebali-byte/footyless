@@ -24,6 +24,14 @@
   let round = 1, locked = false, deck = [], track = [];
 
   /* consecutive scorer pairs with meaningful gap → career duels */
+  /* ---- daily deterministic RNG ---- */
+  let RNG = Math.random;
+  function makeSeedRng(seedStr) {
+    let h = 2166136261;
+    for (let i = 0; i < seedStr.length; i++) { h ^= seedStr.charCodeAt(i); h = Math.imul(h, 16777619); }
+    let a = h >>> 0;
+    return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  }
   function pairUp(list) {
     const out = [];
     for (let i = 0; i + 1 < list.length; i += 2) {
@@ -34,7 +42,7 @@
   }
 
   /* ---------- deal a mixed deck ---------- */
-  function buildDeck() {
+  function buildDeck(practice) {
     const careerPool = (D.CAREER_DUELS_DYNAMIC && D.CAREER_DUELS_DYNAMIC.length >= 12)
       ? D.CAREER_DUELS_DYNAMIC.map(s => ({ l: { n: s.n, c: s.c, v: s.v } }))
       : null;
@@ -42,13 +50,13 @@
     for (let i = 0; i < MAX_ROUNDS; i++) {
       types.push(["match", "career", "bet"][i % 3]);   // even 3/3/3 split +1
     }
-    const dealt = D.shuffle(types, null);
+    const dealt = D.shuffle(types, RNG);
     const pools = {
-      match: D.shuffle(D.MATCH_DUELS, null).map(d => ({ l: d.l, r: d.r })),
+      match: D.shuffle(D.MATCH_DUELS, RNG).map(d => ({ l: d.l, r: d.r })),
       career: careerPool
-        ? pairUp(D.shuffle(careerPool, null))
-        : D.shuffle(D.CAREER_DUELS, null).map(d => ({ l: d.l, r: d.r })),
-      bet: D.shuffle(D.SCORE_BETS, null).map(b => ({ team: b.team, meta: b.meta, options: b.options, answerIdx: b.answerIdx })),
+        ? pairUp(D.shuffle(careerPool, RNG))
+        : D.shuffle(D.CAREER_DUELS, RNG).map(d => ({ l: d.l, r: d.r })),
+      bet: D.shuffle(D.SCORE_BETS, RNG).map(b => ({ team: b.team, meta: b.meta, options: b.options, answerIdx: b.answerIdx })),
     };
     deck = dealt.map(ty => ({ type: ty, data: pools[ty].pop() })).filter(r => r.data);
     /* fill shortfall by recycling */
@@ -226,15 +234,16 @@
       title: wonAll ? T("perf_title") : T("ft_title"),
       bodyEl: body,
       actions: [
-        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(); } },
+        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(true); } },
         { label: T("share"), variant: "btn-secondary", onClick: () => GL.copyText(shareText(score)) },
       ],
     });
     GL.confetti(wonAll ? 160 : 40);
   }
 
-  function restart() {
+  function restart(practice) {
     round = 1; track = [];
+    RNG = practice ? Math.random : makeSeedRng(GL.todayStr() + "|scoreless");
     buildDeck();
     newRound();
     GL.sfx.drum();
@@ -244,6 +253,7 @@
   Shell.mount(".app", "scoreless");
   const rb = document.getElementById("btn-restart");
   if (rb) { rb.textContent = T("restart_label"); rb.setAttribute("aria-label", T("restart_aria")); rb.addEventListener("click", restart); }
+  RNG = makeSeedRng(GL.todayStr() + "|scoreless");
   buildDeck();
   newRound();
 })();
