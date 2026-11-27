@@ -93,7 +93,7 @@
 
   /* ---------------- game registry ---------------- */
   const GAMES = [
-    { slug: "capless",    title: "Capless",    tagKey: "tl_capless",    art: "wave",    playable: true },
+    { slug: "moreless",   title: "More/Less",  tagKey: "tl_moreless",   art: "wave",    playable: true },
     { slug: "scoreless",  title: "Scoreless",  tagKey: "tl_scoreless",  art: "pitch" },
     { slug: "kitless",    title: "Kitless",    tagKey: "tl_kitless",    art: "scarf" },
     { slug: "missingxi",  title: "Missing XI", tagKey: "tl_missingxi",  art: "eleven" },

@@ -28,7 +28,7 @@
   /* per-game breakdown */
   const rows = Shell.GAMES.map(g => {
     const st = GL.statsFor(g.slug);
-    const denom = g.slug === "capless" ? 12 : 12;
+    const denom = g.slug === "moreless" ? 25 : 12;
     const pct = Math.min((st.avgScore ?? 0) / denom, 1) * 100;
     return `
       <div class="setting-row" style="background:var(--tile);border-radius:12px;padding:14px 16px;margin-bottom:10px;box-shadow:var(--shadow-sm)">
@@ -52,9 +52,9 @@
     ${rows}
   `;
 
-  /* ------- score-distribution histogram (Capless: rounds won 0-12) ------- */
-  const dist = Array.from({ length: 13 }, () => 0);
-  GL.getResults("capless").forEach(r => dist[Math.max(0, Math.min(12, r.score ?? 0))]++);
+  /* ------- score-distribution histogram (More/Less: 25-round circuit) ------- */
+  const dist = Array.from({ length: 26 }, () => 0);
+  GL.getResults("moreless").forEach(r => dist[Math.max(0, Math.min(25, r.score ?? 0))]++);
   const playedSum = dist.reduce((a, b) => a + b, 0);
   if (playedSum > 0) {
     const peak = Math.max(...dist);
