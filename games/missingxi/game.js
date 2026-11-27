@@ -1,207 +1,210 @@
 /* ============================================================
-   FOOTYLESS · MISSING XI — name the legendary XI
-   Pitch slots → mini-Wordle per player (6 letter tries each).
-   ≤2 failed shirts = victorious full time.
+   FOOTYLESS · MISSING XI 2.0 — playfootball.games parity
+   Structure mirrored: fixture header triptych, Normal/Hard picker,
+   pitch board (440px, formation shirts, dotted masks, per-shirt
+   try counters, 0/11, GIVE UP), full-screen wordle takeover w/
+   BACK preserving progress, on-screen keyboard.
+   Skin: FOOTYLESS palette/fonts. Normal shows numbers; Hard hides.
    ============================================================ */
 (function () {
   "use strict";
   const GL = window.GL, Shell = window.Shell, T = window.I18N.t;
   const M = window.MX_DATA;
 
-  const WORD_LEN_MAX = 12, TRIES = 6;
+  const TRIES = 6;
   const ROWS_Q = ["QWERTYUIOP", "ASDFGHJKL", "ZXCVBNM"];
 
   const app = document.getElementById("duel-app");
-  let fx = null, state = null, activeSlot = -1;
+  let fx = null, hard = false, view = "start"; // start | pitch | wordle | done
+  let activeSlot = -1;
 
-  /* ---------- boot ---------- */
+  /* per-shirt persistent state */
+  let S = null;
+
   Shell.mount(".app", "missingxi");
-  const rb = document.getElementById("btn-restart");
-  if (rb) { rb.textContent = T("restart_label"); rb.addEventListener("click", restart); }
-  restart();
 
-  function restart() {
-    fx = M.FIXTURES[(Math.random() * M.FIXTURES.length) | 0];
-    state = fx.lineup.map(() => ({ tries: 0, solved: false, failed: false, tried: false, guessRows: [] }));
-    GL.sfx.whistle();
+  /* ================= VIEW: START (mode picker over pitch bg) ================= */
+  function renderStart() {
+    view = "start";
+    app.innerHTML = `
+      <div class="mx2-wrap">
+        <div class="mx2-head">
+          <div class="mx2-comp">${fx.comp} <span>${fx.season}</span></div>
+          <div class="mx2-tri">
+            <div class="mx2-team"><svg class="mx2-crest" viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 0 1-10 0Z"/></svg><span>${fx.team}</span></div>
+            <div class="mx2-score"><b>${fx.score}</b><span>${fx.note || fx.date || ""}</span></div>
+            <div class="mx2-team opp"><svg class="mx2-crest" viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 0 1-10 0Z"/></svg><span>${fx.home === fx.team ? fx.away : fx.home}</span></div>
+          </div>
+        </div>
+        <div class="mx2-pitchbg">
+          <div class="mx2-modewrap">
+            <button class="mx2-mode" data-mode="normal"><span>NORMAL</span></button>
+            <button class="mx2-mode" data-mode="hard"><span>HARD</span></button>
+          </div>
+        </div>
+      </div>`;
+    app.querySelectorAll(".mx2-mode").forEach(b =>
+      b.addEventListener("click", () => { hard = b.dataset.mode === "hard"; GL.sfx.press(); startRun(); }));
+  }
+
+  /* ================= VIEW: PITCH ================= */
+  function startRun() {
+    S = fx.lineup.map(() => ({ rows: [], solved: false, failed: false, tries: 0, dirty: false }));
+    GL.sfx.drum();
     renderPitch();
   }
 
-  /* ================= PITCH ================= */
-  function renderPitch() {
-    const fails = state.filter(s => s.failed).length;
-    const solved = state.filter(s => s.solved).length;
-    app.innerHTML = `
-      <div class="mx-matchinfo">
-        <div class="mx-comp">${fx.comp} · ${fx.season}</div>
-        <div class="mx-fixture"><b>${fx.home} ${fx.score} ${fx.away}</b> <span>${fx.note}</span></div>
-        <div class="mx-task">${T("mx_task", { team: fx.team })} · <span class="mx-formation">${fx.formation}</span></div>
-        <div class="mx-progress">${solved} ✓ · ${fails} ✗</div>
-      </div>
-      <div class="mx-pitch">
-        <div class="mx-lines"></div>
-        ${fx.lineup.map((p, i) => slotHTML(p, i)).join("")}
-      </div>
-      <div class="choice-bar" style="margin-top:18px;grid-template-columns:1fr 1fr">
-        <button class="choice-btn" id="mx-giveup" style="font-size:15px">${T("mx_giveup")}</button>
-        <button class="choice-btn" id="mx-nextun" style="font-size:15px">${T("mx_next")}</button>
-      </div>
-      <p class="wip-text" style="margin-top:12px;text-align:center;font-size:12.5px">${T("mx_rule")}</p>
-      <div id="mx-wordle-anchor"></div>`;
-
-    app.querySelectorAll("[data-slot]").forEach(el =>
-      el.addEventListener("click", () => openWordle(+el.dataset.slot)));
-    app.querySelector("#mx-giveup").addEventListener("click", () => {
-      GL.openModal({
-        title: T("mx_giveup_q"),
-        bodyHTML: `<p>${T("mx_giveup_body")}</p>`,
-        actions: [
-          { label: T("cancel") },
-          { label: T("ft_title"), variant: "btn-primary", onClick: close => { close(); endEarly(); } },
-        ],
-      });
-    });
-    app.querySelector("#mx-nextun").addEventListener("click", () => {
-      const firstOpen = state.findIndex(s => !s.solved && !s.failed);
-      if (firstOpen >= 0) openWordle(firstOpen);
-    });
+  function maskOf(p) {
+    /* surname display length incl. hyphen marker */
+    const sur = M.surnameOf(p.name);
+    let m = "";
+    for (const ch of sur) m += /[-'. ]/.test(ch) ? "-" : ".";
+    return m;
   }
 
-  function slotHTML(p, i) {
-    const s = state[i];
-    const cls = s.solved ? "is-solved" : s.failed ? "is-failed" : s.tried ? "is-touched" : "";
-    const label = s.solved || s.failed ? M.surnameOf(p.name).charAt(0) + M.surnameOf(p.name).slice(1).toLowerCase() : "?";
+  function solvedCount() { return S.filter(x => x.solved).length; }
+  function failedCount() { return S.filter(x => x.failed).length; }
+
+  function renderPitch() {
+    view = "pitch";
+    const solved = solvedCount(), failed = failedCount();
+    app.innerHTML = `
+      <div class="mx2-wrap">
+        <div class="mx2-head">
+          <div class="mx2-comp">${fx.comp} <span>${fx.season}</span></div>
+          <div class="mx2-tri">
+            <div class="mx2-team"><svg class="mx2-crest" viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 0 1-10 0Z"/></svg><span>${fx.team}</span></div>
+            <div class="mx2-score"><b>${fx.score}</b><span>${fx.note || ""}</span></div>
+            <div class="mx2-team opp"><svg class="mx2-crest" viewBox="0 0 24 24"><path d="M7 4h10v6a5 5 0 0 1-10 0Z"/></svg><span>${fx.home === fx.team ? fx.away : fx.home}</span></div>
+          </div>
+        </div>
+        <div class="mx2-pitch" data-pitch>
+          ${fx.lineup.map((p, i) => shirtHTML(p, i)).join("")}
+          <div class="mx2-boardfoot">
+            <span class="mx2-counter"><b>${solved}</b>/${fx.lineup.length}</span>
+            <button class="mx2-giveup" id="mx-giveup">${T("mx_giveup")}</button>
+          </div>
+        </div>
+        <button class="mx2-backrow" id="mx-restart">↻ ${T("mx_newmatch")}</button>
+      </div>`;
+    paintShirts();
+    app.querySelectorAll("[data-shirt]").forEach(el =>
+      el.addEventListener("click", () => openWordle(+el.dataset.shirt)));
+    app.querySelector("#mx-giveup").addEventListener("click", confirmGiveUp);
+    app.querySelector("#mx-restart").addEventListener("click", () => renderStart());
+  }
+
+  function shirtHTML(p, i) {
+    const s = S[i];
+    const num = (!hard || s.solved) ? `<span class="mx2-num">${p.num ?? i + 1}</span>` : "";
+    const cls = s.solved ? " is-solved" : s.failed ? " is-failed" : s.dirty ? " is-touched" : "";
+    const label = s.solved || s.failed ? M.surnameOf(p.name) : `<span class="mx2-mask">${maskOf(p)}</span>`;
     return `
-      <button class="mx-slot ${cls}" data-slot="${i}"
-        style="--x:${p.x}%;--y:${p.y}%" aria-label="${p.pos} ${s.solved || s.failed ? p.name : T("mx_hidden")}">
-        <span class="mx-jersey">${s.failed ? "✗" : s.solved ? "✓" : i + 1}</span>
-        <span class="mx-pos">${p.pos}</span>
-        <span class="mx-name">${label}</span>
+      <button class="mx2-shirt${cls}" data-shirt="${i}" style="--x:${p.x}%;--y:${p.y}%" aria-label="${p.pos}">
+        <span class="mx2-jersey">${num}<i>${p.num ?? i + 1}</i></span>
+        <span class="mx2-under"><u class="mx2-tries">${s.tries}</u>${label}</span>
       </button>`;
   }
 
-  function refreshSlots() {
+  function paintShirts() {
     fx.lineup.forEach((p, i) => {
-      const el = app.querySelector(`[data-slot="${i}"]`);
-      if (el) el.outerHTML = slotHTML(p, i);
+      const el = app.querySelector(`[data-shirt="${i}"]`);
+      if (el) el.outerHTML = shirtHTML(p, i);
     });
-    app.querySelectorAll("[data-slot]").forEach(el =>
-      el.addEventListener("click", () => openWordle(+el.dataset.slot)));
+    app.querySelectorAll("[data-shirt]").forEach(el =>
+      el.addEventListener("click", () => openWordle(+el.dataset.shirt)));
+    const c = app.querySelector("[data-pitch] .mx2-counter b");
+    if (c) c.textContent = solvedCount();
   }
 
-  /* ================= WORDLE PER PLAYER ================= */
-  function openWordle(slotIdx) {
-    const s = state[slotIdx];
-    if (s.solved || s.failed) {
-      /* gentle no-spam reminder (max once per slot per session) */
-      if (!s._reminded) { s._reminded = true; GL.toast(M.surnameOf(fx.lineup[slotIdx].name) + (s.failed ? " — ✗" : " — ✓")); }
-      return;
-    }
-    activeSlot = slotIdx;
-    const player = fx.lineup[slotIdx];
-    const anchor = app.querySelector("#mx-wordle-anchor");
-    anchor.innerHTML = `
-      <div class="wx-panel anim-rise" role="dialog" aria-label="${player.pos}">
-        <div class="wx-head">
-          <span class="wx-pos">${player.pos}</span>
-          <span class="wx-hint">${T("mx_hintline", { team: fx.team, tries: TRIES })}</span>
-          <button class="icon-btn wx-close" aria-label="${T("cancel")}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
+  /* ================= VIEW: WORDLE TAKEOVER ================= */
+  function openWordle(idx) {
+    const s = S[idx];
+    if (s.solved || s.failed) { GL.toast(M.surnameOf(fx.lineup[idx].name) + (s.failed ? " ✗" : " ✓"), { silent: false }); return; }
+    activeSlot = idx;
+    view = "wordle";
+    const p = fx.lineup[idx];
+    const target = M.surnameOf(p.name);
+    app.innerHTML = `
+      <div class="mx2-wx">
+        <button class="mx2-back" id="wx-back">← ${T("mx_back")}</button>
+        <div class="mx2-grid" style="--cols:${target.length}" data-grid>
+          ${gridHTML(s, target)}
         </div>
-        <div class="wx-grid" id="wx-grid"></div>
-        <div class="wx-keys" id="wx-keys"></div>
-        <div class="wx-note">${T("mx_surname_note")}</div>
+        <div class="mx2-keys" data-keys></div>
       </div>`;
-    anchor.querySelector(".wx-close").addEventListener("click", closePanel);
-    anchor.dataset.slot = slotIdx;
-
-    drawRows(anchor, s);
-    drawKeys(anchor, s, player);
-  }
-
-  /* one delegated physical-key listener for the app lifetime */
-  document.addEventListener("keydown", e => {
-    if (activeSlot < 0 || !app.querySelector(".wx-panel")) return;
-    if (e.target && /INPUT|TEXTAREA/.test(e.target.tagName)) return;
-    if (e.key === "Enter") { e.preventDefault(); submitCurrent(fx.lineup[activeSlot]); }
-    else if (e.key === "Backspace") { e.preventDefault(); bksp(fx.lineup[activeSlot]); }
-    else if (/^[a-zA-Zà-ÿÀ-ŸçÇñÑ]$/.test(e.key)) addLetter(M.fold(e.key));
-  });
-
-  function drawRows(panel, s) {
-    const grid = panel.querySelector("#wx-grid");
-    if (!grid) return;
-    const target = surnameTarget();
-    const graded = (s.guessRows || []).filter(g => g.marks);
-    const draft = (s.guessRows || []).find(g => !g.marks);
-    let html = "";
-    for (let r = 0; r < TRIES; r++) {
-      let cells = "";
-      for (let c = 0; c < target.length; c++) {
-        if (r < graded.length) {
-          const g = graded[r];
-          cells += `<span class="wx-tile ${g.marks[c]}" style="animation-delay:${c * 55}ms">${g.word[c] || ""}</span>`;
-        } else if (r === graded.length && draft) {
-          cells += `<span class="wx-tile">${draft.word[c] || ""}</span>`;
-        } else {
-          cells += `<span class="wx-tile"></span>`;
-        }
-      }
-      html += `<div class="wx-row${r === graded.length ? " is-draft" : ""}">${cells}</div>`;
-    }
-    grid.innerHTML = html;
-  }
-
-  function renderWordle() {
-    const panel = app.querySelector("#mx-wordle-anchor .wx-panel");
-    const s = state[activeSlot];
-    if (!panel || !s) return;
-    drawRows(panel, s);
-  }
-
-  let draft = "";
-  function surnameTarget() { return M.surnameOf(fx.lineup[activeSlot].name); }
-
-  function drawKeys(panel, s, player) {
-    const keysEl = panel.querySelector("#wx-keys");
-    const mk = (label, handler, cls) => `<button class="wx-key ${cls || ""}" data-k="${label}">${label}</button>`;
-    let html = ROWS_Q[0].split("").map(k => mk(k)).join("");
-    html += `<div class="wx-krow">${ROWS_Q[1].split("").map(k => mk(k)).join("")}</div>`;
-    html += `<div class="wx-krow">${mk("⌫", null, "wide")}${ROWS_Q[2].split("").map(k => mk(k)).join("")}${mk("ENTER", null, "wide")}</div>`;
-    keysEl.innerHTML = html;
-    keysEl.onclick = e => {
-      const b = e.target.closest(".wx-key");
+    app.querySelector("#wx-back").addEventListener("click", closeWordle);
+    drawKeys(target);
+    const kb = app.querySelector("[data-keys]");
+    kb.onclick = e => {
+      const b = e.target.closest("[data-k]");
       if (!b) return;
       const k = b.dataset.k;
-      if (k === "ENTER") submitCurrent(player);
-      else if (k === "⌫") bksp(player);
-      else addLetter(k);
+      if (k === "ENTER") submitRow(idx, target);
+      else if (k === "DEL") delChar(s);
+      else addChar(s, k);
     };
   }
 
-  function addLetter(ch) {
-    if (activeSlot < 0) return;
-    const s = state[activeSlot];
+  function gridHTML(s, target) {
+    const graded = s.rows.filter(r => r.marks);
+    const draft = s.rows.find(r => !r.marks) || null;
+    let html = "";
+    for (let r = 0; r < TRIES; r++) {
+      for (let c = 0; c < target.length; c++) {
+        let ch = "", st = "";
+        if (r < graded.length) { ch = graded[r].word[c] || ""; st = graded[r].marks[c] || ""; }
+        else if (r === graded.length && draft) { ch = draft.word[c] || ""; }
+        html += `<span class="mx2-tile ${st}${r === graded.length ? " is-cur" : ""}" style="animation-delay:${c * 50}ms">${ch}</span>`;
+      }
+    }
+    return html;
+  }
+
+  function rerender(idx) {
+    const target = M.surnameOf(fx.lineup[idx].name);
+    const g = app.querySelector("[data-grid]");
+    if (g) g.innerHTML = gridHTML(S[idx], target);
+  }
+
+  function drawKeys(target) {
+    const kb = app.querySelector("[data-keys]");
+    let html = `<div class="mx2-krow">` + ROWS_Q[0].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `</div>`;
+    html += `<div class="mx2-krow">` + ROWS_Q[1].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `</div>`;
+    html += `<div class="mx2-krow"><button class="mx2-key wide" data-k="DEL">${T("mx_delete")}</button>` + ROWS_Q[2].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `<button class="mx2-key wide" data-k="ENTER">${T("mx_enter")}</button></div>`;
+    kb.innerHTML = html;
+  }
+
+  /* physical keys */
+  document.addEventListener("keydown", e => {
+    if (view !== "wordle" || activeSlot < 0) return;
+    const s = S[activeSlot];
     if (!s || s.solved || s.failed) return;
-    s.guessRows = s.guessRows || [];
-    if (s.guessRows.filter(g => g.marks).length >= TRIES) return;
-    let row = s.guessRows[s.guessRows.length - 1];
-    if (!row || row.marks) { row = { word: "", marks: null }; s.guessRows.push(row); }
-    if (row.word.length < WORD_LEN_MAX) { row.word += ch; GL.sfx.type(); renderWordle(); }
+    const target = M.surnameOf(fx.lineup[activeSlot].name);
+    if (e.key === "Enter") { e.preventDefault(); submitRow(activeSlot, target); }
+    else if (e.key === "Backspace") { e.preventDefault(); delChar(s); }
+    else if (/^[a-zA-Zà-ÿÀ-ŸçÇñÑ]$/.test(e.key)) addChar(s, M.fold(e.key));
+  });
+
+  function addChar(s, ch) {
+    if (s.solved || s.failed) return;
+    s.rows = s.rows || [];
+    let row = s.rows.find(r => !r.marks);
+    if (!row) {
+      if (s.rows.filter(r => r.marks).length >= TRIES) return;
+      row = { word: "", marks: null }; s.rows.push(row);
+    }
+    if (row.word.length >= 12) return;
+    row.word += ch;
+    s.dirty = true;
+    rerender(activeSlot);
   }
-  function bksp(player) {
-    if (activeSlot < 0) return;
-    const s = state[activeSlot];
-    if (!s) return;
-    s.guessRows = s.guessRows || [];
-    const row = s.guessRows[s.guessRows.length - 1];
-    if (!row || row.marks || !row.word.length) return;
+  function delChar(s) {
+    const row = (s.rows || []).find(r => !r.marks);
+    if (!row || !row.word.length) return;
     row.word = row.word.slice(0, -1);
-    GL.sfx.type();
-    renderWordle();
+    rerender(activeSlot);
   }
-  function redrawDraft() { renderWordle(); }
 
   function grade(word, target) {
     const marks = Array(target.length).fill("bad");
@@ -210,118 +213,108 @@
       if (word[i] === target[i]) { marks[i] = "good"; pool[i] = null; }
     for (let i = 0; i < target.length; i++) {
       if (marks[i] === "good") continue;
-      const idx = pool.indexOf(word[i]);
-      if (idx >= 0) { marks[i] = "warm"; pool[idx] = null; }
+      const j = pool.indexOf(word[i]);
+      if (j >= 0) { marks[i] = "warm"; pool[j] = null; }
     }
     return marks;
   }
 
-  function submitCurrent(player) {
-    if (activeSlot < 0) return;
-    const s = state[activeSlot];
-    if (!s || !s.guessRows) return;
-    const row = s.guessRows[s.guessRows.length - 1];
+  function submitRow(idx, target) {
+    const s = S[idx];
+    const row = (s.rows || []).find(r => !r.marks);
     if (!row || !row.word) return;
-    if (row.marks) return; /* already graded — need next row */
-    if (row.word.length !== surnameTarget().length) {
-      GL.toast(T("mx_len_needed", { n: surnameTarget().length }), { error: true });
-      GL.sfx.wrong();
+    if (row.word.length !== target.length) {
+      GL.toast(T("mx_len_needed", { n: target.length }), { error: true });
       return;
     }
-    const target = surnameTarget();
-    const foldedAliases = (M.ALIASES[target] || []);
-    const isExact = row.word === target || foldedAliases.includes(row.word);
-    row.marks = isExact ? Array(target.length).fill("good") : grade(row.word, target);
-    s.tries++;
-    s.tried = true;
+    const aliases = M.ALIASES[target] || [];
+    const exact = row.word === target || aliases.includes(row.word);
+    row.marks = exact ? Array(target.length).fill("good") : grade(row.word, target);
+    s.tries++; s.dirty = true;
 
-    renderWordle();
-    row.marks.every(mm => mm === "good")
-      ? (GL.sfx.correct(), GL.confetti(24))
-      : GL.sfx.reveal();
-
-    if (isExact) {
-      s.solved = true;
-      setTimeout(closePanel, 750);
-    } else if (s.tries >= TRIES) {
-      s.failed = true;
-      GL.sfx.whistle();
-      GL.toast(T("mx_failed_reveal", { name: player.name }), { error: true });
-      setTimeout(closePanel, 950);
-    } else {
-      /* clear draft for the next row */
-      row.word = "";
-      row.marks = null;
+    rerender(idx);
+    if (exact) { GL.sfx.correct(); GL.confetti(26); s.solved = true; setTimeout(backToPitch, 800); }
+    else {
+      GL.sfx.wrong();
+      if (s.tries >= TRIES) {
+        s.failed = true;
+        GL.sfx.press();
+        GL.toast(T("mx_failed_reveal", { name: fx.lineup[idx].name }), { error: true });
+        setTimeout(backToPitch, 900);
+      }
     }
   }
 
-  function closePanel() {
-    app.querySelector("#mx-wordle-anchor").innerHTML = "";
+  function closeWordle() {
+    /* BACK keeps progress: rows/tries preserved in S */
+    GL.sfx.closeUI();
+    backToPitch();
+  }
+  function backToPitch() {
     activeSlot = -1;
-    refreshSlots();
-    const solvedAll = state.every(x => x.solved || x.failed);
-    const fails = state.filter(x => x.failed).length;
-    if (solvedAll || fails > 2) setTimeout(endNormal, 400);
+    renderPitch();
+    if (S.every(x => x.solved || x.failed) && failedCount() > 2) endNormal();
+    else if (S.every(x => x.solved || x.failed)) endNormal();
   }
 
-  /* ================= RESULTS ================= */
-  function computedResult() {
-    const solved = state.filter(x => x.solved);
-    const failed = state.filter(x => x.failed);
-    const quick = solved.filter(x => x.tries <= 2).length;
-    return { solved: solved.length, quick, fails: failed.length,
-      won: failed.length <= 2 && solved.length === fx.lineup.length };
+  /* ================= GIVE UP / END ================= */
+  function confirmGiveUp() {
+    GL.openModal({
+      title: T("mx_giveup_q"),
+      bodyHTML: `<p>${T("mx_giveup_body")}</p>`,
+      actions: [
+        { label: T("cancel") },
+        { label: T("ft_title"), variant: "btn-primary", onClick: c => { c(); endNormal(true); } },
+      ],
+    });
   }
 
-  function shareMarks(res) {
-    return fx.lineup.map((_, i) => {
-      const s = state[i];
-      return s.failed ? "🟥" : s.solved ? (s.tries <= 2 ? "🟩" : "🟨") : "⬛";
-    }).reduce((rows, mk, i) => {
-      const lane = fx.lineup[i].pos === "GK" ? 0 : ["DF"].includes(fx.lineup[i].pos) ? 1 : ["MF", "AM"].includes(fx.lineup[i].pos) ? 2 : 3;
-      (rows[lane] = rows[lane] || []).push(mk);
-      return rows;
-    }, []).map(r => r.join("")).join("\n");
+  function computedResult(forfeit) {
+    const solved = S.filter(x => x.solved).length;
+    const fails = S.filter(x => x.failed).length;
+    return { solved, fails, won: !forfeit && fails <= 2 && solved === fx.lineup.length };
   }
 
-  function endShareText(res) {
-    return `Footyless · Missing XI — ${fx.home} ${fx.score} ${fx.away} (${fx.note})\n${shareMarks(res)}\n${res.solved}/11 · ${fx.season}\nName yours → footyless.com`;
-  }
-
-  function recordAndShow(res, forfeited) {
+  function endNormal(forfeit) {
+    const res = computedResult(forfeit);
     GL.recordResult("missingxi", { won: res.won, score: res.solved, max: 11 });
     res.won || res.solved >= 8 ? GL.sfx.win() : GL.sfx.fanfare();
     const st = GL.statsFor("missingxi");
-    const quip = res.solved === 11 && !res.fails ? T("quip_perf")
-      : res.won ? T("mx_quip_win", { n: res.fails })
-      : forfeited ? T("mx_quip_forfeit") : T("quip_low");
+    const quip = res.solved === 11 ? T("quip_perf") : res.won ? T("mx_quip_win", { n: res.fails }) : forfeit ? T("mx_quip_forfeit") : T("quip_low");
     const body = document.createElement("div");
     body.innerHTML = `
       <div class="stat-row" style="margin:6px 0 2px">
         <div class="stat-chip"><div class="stat-chip__num ${res.won ? "is-good" : ""}">${res.solved}</div><div class="stat-chip__label">${T("mx_named")}</div></div>
-        <div class="stat-chip"><div class="stat-chip__num">${res.quick}</div><div class="stat-chip__label">${T("mx_quick")}</div></div>
         <div class="stat-chip"><div class="stat-chip__num">${res.fails}</div><div class="stat-chip__label">${T("mx_missed")}</div></div>
+        <div class="stat-chip"><div class="stat-chip__num">${st.played}</div><div class="stat-chip__label">${T("played")}</div></div>
       </div>
       <p style="text-align:center;margin-top:8px">${quip}</p>`;
     GL.openModal({
       title: res.won ? T("perf_title") : T("ft_title"),
       bodyEl: body,
-      onClose: () => { window.removeEventListener("keydown", physHandler); },
       actions: [
-        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); restart(); } },
-        { label: T("share"), variant: "btn-secondary", onClick: () => GL.copyText(endShareText(res)) },
+        { label: T("rematch"), variant: "btn-primary", onClick: close => { close(); newMatch(); } },
+        { label: T("share"), variant: "btn-secondary", onClick: () => GL.copyText(shareText(res)) },
       ],
     });
     GL.confetti(res.won ? 160 : 50);
   }
-  let physHandler = null;
 
-  function endNormal() { const res = computedResult(); recordAndShow(res, false); }
-  function endEarly() {
-    /* forfeit: leave unnamed shirts unresolved; only fails already earned count */
-    refreshSlots();
-    const res = computedResult();
-    res.won = false;
-    recordAndShow(res, true);
+  function shareMarks(res) {
+    return fx.lineup.map((p, i) => {
+      const s = S[i];
+      return s.failed ? "🟥" : s.solved ? (s.tries <= 2 ? "🟩" : "🟨") : "⬛";
+    }).join("").replace(/(.{4})/g, "$1\n").trim();
   }
+  function shareText(res) {
+    return `Footyless · Missing XI — ${fx.home} ${fx.score} ${fx.away} (${fx.note})\n${shareMarks(res)}\n${res.solved}/11 · ${fx.season}\nName yours → footyless.com`;
+  }
+
+  function newMatch() {
+    fx = M.FIXTURES[(Math.random() * M.FIXTURES.length) | 0];
+    renderStart();
+  }
+
+  /* ---------- boot ---------- */
+  newMatch();
 })();
