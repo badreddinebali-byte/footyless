@@ -994,6 +994,26 @@ html[dir="rtl"] input { font-family: "Noto Kufi Arabic", "DM Sans", ui-sans-seri
 .ht-chip--ok { background: color-mix(in srgb, var(--answer-correct) 22%, transparent); color: var(--answer-correct); }
 .ht-chip--no { background: color-mix(in srgb, var(--answer-wrong) 20%, transparent); color: var(--answer-wrong); }
 
+/* ---------- Scoreless 2.0 (parity with More/Less) ---------- */
+.ml-shell .dp-betcol { display: flex; flex-direction: column; gap: 10px; justify-content: center; padding: 0 4px; }
+.dp-betbtn { height: 52px; font-size: 14px; padding: 0 10px; white-space: normal; text-align: center; }
+.dp-betbtn[disabled] { opacity: 1; }
+.dp-betbtn.picked-correct { background: var(--answer-correct); color: #0b1a04; }
+.dp-betbtn.picked-wrong { background: var(--answer-wrong); color: #fff; }
+.dp-photo--match { object-position: center; }
+.dp-ph-fallback--match {
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(160deg, color-mix(in srgb, var(--answer-warm) 30%, var(--tile)), var(--bg-recessed));
+  font-size: 52px;
+}
+.mx2-question {
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(16px, 2.6vw, 20px);
+  margin: 12px 0 4px;
+}
+
 /* ---------- Kitless stage ---------- */
 .kit-stage { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 #kit-canvas {

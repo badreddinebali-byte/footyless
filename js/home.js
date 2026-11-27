@@ -7,7 +7,7 @@
 
   /* ---- build cards ---- */
   const grid = document.getElementById("game-grid");
-  grid.innerHTML = Shell.GAMES.map(g => `
+  grid.innerHTML = Shell.GAMES.filter(g => !g.hidden).map(g => `
     <div class="game-cell anim-rise">
       <a class="game-card" href="games/${g.slug}/index.html" data-slug="${g.slug}" aria-label="${g.title}">
         <span class="game-card__badge">TODAY ✓</span>

@@ -100,11 +100,11 @@
   /* ---------------- game registry ---------------- */
   const GAMES = [
     { slug: "moreless",   title: "More/Less",  tagKey: "tl_moreless",   art: "wave",    playable: true },
-    { slug: "scoreless",  title: "Scoreless",  tagKey: "tl_scoreless",  art: "pitch" },
+    { slug: "scoreless",  title: "Scoreless",  tagKey: "tl_scoreless",  art: "pitch",   playable: true },
     { slug: "kitless",    title: "Kitless",    tagKey: "tl_kitless",    art: "scarf" },
     { slug: "missingxi",  title: "Missing XI", tagKey: "tl_missingxi",  art: "eleven" },
-    { slug: "groundless", title: "Groundless", tagKey: "tl_groundless", art: "dart" },
-    { slug: "statless",   title: "Statless",   tagKey: "tl_statless",   art: "stair" },
+    { slug: "groundless", title: "Groundless", tagKey: "tl_groundless", art: "dart",    hidden: true },
+    { slug: "statless",   title: "Statless",   tagKey: "tl_statless",   art: "stair",   hidden: true },
     { slug: "legendless", title: "Legendless", tagKey: "tl_legendless", art: "shuttle" },
   ];
   const gameBy = slug => GAMES.find(g => g.slug === slug);
