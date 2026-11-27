@@ -54,11 +54,25 @@
     renderPitch();
   }
 
+  /* ---- compound surnames: "Kevin De Bruyne" -> display "DE BRUYNE" ---- */
+  function surnameFull(p) {
+    const tokens = String(p.name).trim().split(/\s+/);
+    if (tokens.length === 1) return tokens[0].toUpperCase();
+    const PARTICLE = /^(de|del|van|von|der|den|di|da|dos|das|la|le|el|al|ben|mac|mc)$/i;
+    const out = [tokens[tokens.length - 1]];
+    let i = tokens.length - 2;
+    while (i >= 0 && PARTICLE.test(tokens[i])) { out.unshift(tokens[i]); i--; }
+    return out.join(" ").toUpperCase();
+  }
+  /* grading target: letters only (folded) */
+  function targetOf(p) { return M.fold(surnameFull(p)); }
+  /* display target with spaces (grid includes space columns) */
+  function displayTarget(p) { return surnameFull(p); }
+
   function maskOf(p) {
-    /* surname display length incl. hyphen marker */
-    const sur = M.surnameOf(p.name);
+    const disp = displayTarget(p);
     let m = "";
-    for (const ch of sur) m += /[-'. ]/.test(ch) ? "-" : ".";
+    for (const ch of disp) m += /[-' ]/.test(ch) ? "-" : ".";
     return m;
   }
 
@@ -105,7 +119,7 @@
     const cls = s.solved ? " is-solved" : s.failed ? " is-failed" : s.dirty ? " is-touched" : "";
     const reveal = s.failed && s.revealed;
     const label = s.solved || s.failed
-      ? `<span class="mx2-name${reveal ? " reveal" : ""}">${M.surnameOf(p.name)}</span>`
+      ? `<span class="mx2-name${reveal ? " reveal" : ""}">${displayTarget(p)}</span>`
       : `<span class="mx2-mask">${maskOf(p)}</span>`;
     return `
       <button class="mx2-shirt${cls}" data-shirt="${i}" style="--x:${p.x}%;--y:${p.y}%" aria-label="${p.pos}">
@@ -128,11 +142,11 @@
   /* ================= VIEW: WORDLE TAKEOVER ================= */
   function openWordle(idx) {
     const s = S[idx];
-    if (s.solved || s.failed) { GL.toast(M.surnameOf(fx.lineup[idx].name) + (s.failed ? " ✗" : " ✓"), { silent: false }); return; }
+    if (s.solved || s.failed) { GL.toast(displayTarget(fx.lineup[idx].name) + (s.failed ? " ✗" : " ✓"), { silent: false }); return; }
     activeSlot = idx;
     view = "wordle";
     const p = fx.lineup[idx];
-    const target = M.surnameOf(p.name);
+    const target = displayTarget(p);
     app.innerHTML = `
       <div class="mx2-wx">
         <button class="mx2-back" id="wx-back">← ${T("mx_back")}</button>
@@ -172,14 +186,15 @@
   }
 
   function rerender(idx) {
-    const target = M.surnameOf(fx.lineup[idx].name);
+    const target = displayTarget(fx.lineup[idx]);
     const g = app.querySelector("[data-grid]");
     if (g) g.innerHTML = gridHTML(S[idx], target, true); /* typed edits: no re-poof */
   }
 
   function drawKeys(target) {
+    const needSpace = target.includes(" ");
     const kb = app.querySelector("[data-keys]");
-    let html = `<div class="mx2-krow">` + ROWS_Q[0].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `</div>`;
+    let html = `<div class="mx2-krow">` + (needSpace ? `<button class="mx2-key wide" data-k=" ">␣</button>` : ``) + ROWS_Q[0].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `</div>`;
     html += `<div class="mx2-krow">` + ROWS_Q[1].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `</div>`;
     html += `<div class="mx2-krow"><button class="mx2-key wide" data-k="DEL">${T("mx_delete")}</button>` + ROWS_Q[2].split("").map(k => `<button class="mx2-key" data-k="${k}">${k}</button>`).join("") + `<button class="mx2-key wide" data-k="ENTER">${T("mx_enter")}</button></div>`;
     kb.innerHTML = html;
@@ -190,10 +205,10 @@
     if (view !== "wordle" || activeSlot < 0) return;
     const s = S[activeSlot];
     if (!s || s.solved || s.failed) return;
-    const target = M.surnameOf(fx.lineup[activeSlot].name);
+    const target = displayTarget(fx.lineup[activeSlot]);
     if (e.key === "Enter") { e.preventDefault(); submitRow(activeSlot, target); }
     else if (e.key === "Backspace") { e.preventDefault(); delChar(s); }
-    else if (/^[a-zA-Zà-ÿÀ-ŸçÇñÑ]$/.test(e.key)) addChar(s, M.fold(e.key));
+    else if (/^[a-zA-Zà-ÿÀ-ŸçÇñÑ ]$/.test(e.key)) addChar(s, /[ ]/.test(e.key) ? ' ' : M.fold(e.key));
   });
 
   function addChar(s, ch) {
@@ -205,7 +220,7 @@
       row = { word: "", marks: null }; s.rows.push(row);
     }
     if (row.word.length >= 12) return;
-    row.word += ch;
+    row.word += (ch === " " ? " " : ch);
     s.dirty = true;
     rerender(activeSlot);
   }
