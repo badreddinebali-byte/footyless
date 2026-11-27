@@ -72,7 +72,7 @@
   function maskOf(p) {
     const disp = displayTarget(p);
     let m = "";
-    for (const ch of disp) m += /[-' ]/.test(ch) ? "-" : ".";
+    for (const ch of disp) m += ch === " " ? " " : (/[-']/.test(ch) ? "-" : ".");
     return m;
   }
 
