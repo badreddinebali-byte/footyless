@@ -259,15 +259,16 @@
    "ast": 170
   },
   {
-   "qid": "Q111918457",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/7/77/Ensaio_da_Acad%C3%AAmicos_do_Salgueiro_no_Samb%C3%B3dromo_2008_04.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "qid": "Q39444",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Ronaldinho_in_2019.jpg",
    "n": "Ronaldinho",
    "c": "Brazil",
    "caps": 97,
    "cl": 1,
    "troph": 21,
    "spend": 92,
-   "ast": 190
+   "ast": 190,
+   "file": "Ronaldinho in 2019.jpg"
   },
   {
    "qid": "Q83488",
@@ -282,14 +283,15 @@
   },
   {
    "qid": "Q1912",
-   "img": "https://upload.wikimedia.org/wikipedia/commons/9/96/Karim_Benzema_during_an_interview_in_2021_%282%29_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
+   "img": "https://upload.wikimedia.org/wikipedia/commons/7/7c/Karim_Benzema_wearing_Real_Madrid_home_kit_2021-2022_%28cropped%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=thumbnail_unscaled",
    "n": "Karim Benzema",
    "c": "France",
    "caps": 97,
    "cl": 5,
    "troph": 30,
    "spend": 130,
-   "ast": 170
+   "ast": 170,
+   "file": "Karim Benzema wearing Real Madrid home kit 2021-2022 (cropped).jpg"
   },
   {
    "qid": "Q969725",
